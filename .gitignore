@@ -9,6 +9,7 @@
 *.user
 *.userosscache
 *.sln.docstates
+**/obj/
 appsettings.json
 appsettings.Development.json
 
