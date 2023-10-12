@@ -4,3 +4,4 @@ hej3
 hej4
 YETI
 Merge test
+created a branch with name fixingabug
