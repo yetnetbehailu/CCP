@@ -1,4 +1,13 @@
-﻿var builder = WebApplication.CreateBuilder(args);
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using CCP.Data;
+using CCP.Areas.Identity.Data;
+var builder = WebApplication.CreateBuilder(args);
+var connectionString = builder.Configuration.GetConnectionString("CCPContextConnection") ?? throw new InvalidOperationException("Connection string 'CCPContextConnection' not found.");
+
+builder.Services.AddDbContext<CCPContext>(options => options.UseSqlServer(connectionString));
+
+builder.Services.AddDefaultIdentity<CCPUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<CCPContext>();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -17,12 +26,12 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
-
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
-
+app.MapRazorPages();
 app.Run();
 
