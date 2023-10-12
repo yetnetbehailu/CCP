@@ -3,4 +3,5 @@ hej2
 hej3
 hej4
 YETI
-Moawia
+Merge test
+created a branch with name fixingabug
