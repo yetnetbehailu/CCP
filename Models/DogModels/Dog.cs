@@ -8,16 +8,16 @@ namespace CCP.Models.DogModels
 	{
         [Key]
         public int ID { get; set; }
-        public string RegisteredName { get; set; }
-        public string RegNo { get; set; }
-        public string PetName { get; set; }
-        public DateTime? BirthDate { get; set; }
-        public DateTime? DeathhDate { get; set; }
-        public string Coat { get; set; }
-        public string Gender { get; set; }
-        public string Color { get; set; }
-        public float Height { get; set; }
-        public float Weight { get; set; }
+        public string RegName { get; set; }
+        public string? RegNo { get; set; }
+        public string? PetName { get; set; }
+        public DateTime? DOB { get; set; }
+        public DateTime? YearOfDeath { get; set; }
+        public string? Coat { get; set; }
+        public string? Gender { get; set; }
+        public string? Color { get; set; }
+        public decimal? Height { get; set; }
+        public decimal? Weight { get; set; }
 
 
 
