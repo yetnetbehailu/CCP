@@ -3,14 +3,9 @@
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
-  <MonoDevelop.Ide.Workbench ActiveDocument="Views/Shared/_Layout.cshtml">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Areas/Identity/Data/CCPContext.cs">
     <Files>
-      <File FileName="ReadME.mk" Line="1" Column="1" />
-      <File FileName="moawia.txt" />
-      <File FileName="Views/Shared/_LoginPartial.cshtml" />
-      <File FileName="Views/Shared/_Layout.cshtml" Line="1" Column="1" />
-      <File FileName="Program.cs" Line="1" Column="1" />
-      <File FileName="Areas/Identity/Data/CCPUser.cs" Line="1" Column="1" />
+      <File FileName="Areas/Identity/Data/CCPContext.cs" Line="13" Column="13" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
@@ -19,16 +14,18 @@
             <Node name="CCP">
               <Node name="Areas" expanded="True">
                 <Node name="Identity" expanded="True">
-                  <Node name="Data" expanded="True" />
-                </Node>
-              </Node>
-              <Node name="Views" expanded="True">
-                <Node name="Shared" expanded="True">
-                  <Node name="_Layout.cshtml" selected="True" />
+                  <Node name="Data" expanded="True">
+                    <Node name="CCPContext.cs" selected="True" />
+                  </Node>
                 </Node>
               </Node>
             </Node>
           </Node>
+        </State>
+      </Pad>
+      <Pad Id="ClassPad">
+        <State name="__root__">
+          <Node name="CCP" expanded="True" selected="True" />
         </State>
       </Pad>
     </Pads>
