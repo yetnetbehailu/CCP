@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using CCP.Data;
 using CCP.Areas.Identity.Data;
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddRazorPages().AddRazorRuntimeCompilation();
 var connectionString = builder.Configuration.GetConnectionString("CCPContextConnection") ?? throw new InvalidOperationException("Connection string 'CCPContextConnection' not found.");
 
 builder.Services.AddDbContext<CCPContext>(options => options.UseSqlServer(connectionString));
