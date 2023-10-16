@@ -4,6 +4,7 @@ using CCP.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CCP.Migrations
 {
     [DbContext(typeof(CCPContext))]
-    partial class CCPContextModelSnapshot : ModelSnapshot
+    [Migration("20231013114548_DogTableChange")]
+    partial class DogTableChange
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -85,168 +88,6 @@ namespace CCP.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = "user1",
-                            AccessFailedCount = 0,
-                            ConcurrencyStamp = "concurrency_stamp_1",
-                            Email = "user1@example.com",
-                            EmailConfirmed = true,
-                            LockoutEnabled = false,
-                            NormalizedEmail = "USER1@EXAMPLE.COM",
-                            NormalizedUserName = "USER1@EXAMPLE.COM",
-                            PasswordHash = "your_hashed_password",
-                            PhoneNumberConfirmed = false,
-                            SecurityStamp = "security_stamp_1",
-                            TwoFactorEnabled = false,
-                            UserName = "user1@example.com"
-                        },
-                        new
-                        {
-                            Id = "user2",
-                            AccessFailedCount = 0,
-                            ConcurrencyStamp = "concurrency_stamp_2",
-                            Email = "user2@example.com",
-                            EmailConfirmed = true,
-                            LockoutEnabled = false,
-                            NormalizedEmail = "USER2@EXAMPLE.COM",
-                            NormalizedUserName = "USER2@EXAMPLE.COM",
-                            PasswordHash = "your_hashed_password",
-                            PhoneNumberConfirmed = false,
-                            SecurityStamp = "security_stamp_2",
-                            TwoFactorEnabled = false,
-                            UserName = "user2@example.com"
-                        },
-                        new
-                        {
-                            Id = "user3",
-                            AccessFailedCount = 0,
-                            ConcurrencyStamp = "concurrency_stamp_3",
-                            Email = "user3@example.com",
-                            EmailConfirmed = true,
-                            LockoutEnabled = false,
-                            NormalizedEmail = "USER3@EXAMPLE.COM",
-                            NormalizedUserName = "USER3@EXAMPLE.COM",
-                            PasswordHash = "hashed_password_3",
-                            PhoneNumberConfirmed = false,
-                            SecurityStamp = "security_stamp_3",
-                            TwoFactorEnabled = false,
-                            UserName = "user3@example.com"
-                        },
-                        new
-                        {
-                            Id = "user4",
-                            AccessFailedCount = 0,
-                            ConcurrencyStamp = "concurrency_stamp_4",
-                            Email = "user4@example.com",
-                            EmailConfirmed = true,
-                            LockoutEnabled = false,
-                            NormalizedEmail = "USER4@EXAMPLE.COM",
-                            NormalizedUserName = "USER4@EXAMPLE.COM",
-                            PasswordHash = "hashed_password_4",
-                            PhoneNumberConfirmed = false,
-                            SecurityStamp = "security_stamp_4",
-                            TwoFactorEnabled = false,
-                            UserName = "user4@example.com"
-                        },
-                        new
-                        {
-                            Id = "user5",
-                            AccessFailedCount = 0,
-                            ConcurrencyStamp = "concurrency_stamp_5",
-                            Email = "user5@example.com",
-                            EmailConfirmed = true,
-                            LockoutEnabled = false,
-                            NormalizedEmail = "USER5@EXAMPLE.COM",
-                            NormalizedUserName = "USER5@EXAMPLE.COM",
-                            PasswordHash = "hashed_password_5",
-                            PhoneNumberConfirmed = false,
-                            SecurityStamp = "security_stamp_5",
-                            TwoFactorEnabled = false,
-                            UserName = "user5@example.com"
-                        },
-                        new
-                        {
-                            Id = "user6",
-                            AccessFailedCount = 0,
-                            ConcurrencyStamp = "concurrency_stamp_6",
-                            Email = "user6@example.com",
-                            EmailConfirmed = true,
-                            LockoutEnabled = false,
-                            NormalizedEmail = "USER6@EXAMPLE.COM",
-                            NormalizedUserName = "USER6@EXAMPLE.COM",
-                            PasswordHash = "hashed_password_6",
-                            PhoneNumberConfirmed = false,
-                            SecurityStamp = "security_stamp_6",
-                            TwoFactorEnabled = false,
-                            UserName = "user6@example.com"
-                        },
-                        new
-                        {
-                            Id = "user7",
-                            AccessFailedCount = 0,
-                            ConcurrencyStamp = "concurrency_stamp_7",
-                            Email = "user7@example.com",
-                            EmailConfirmed = true,
-                            LockoutEnabled = false,
-                            NormalizedEmail = "USER7@EXAMPLE.COM",
-                            NormalizedUserName = "USER7@EXAMPLE.COM",
-                            PasswordHash = "hashed_password_7",
-                            PhoneNumberConfirmed = false,
-                            SecurityStamp = "security_stamp_7",
-                            TwoFactorEnabled = false,
-                            UserName = "user7@example.com"
-                        },
-                        new
-                        {
-                            Id = "user8",
-                            AccessFailedCount = 0,
-                            ConcurrencyStamp = "concurrency_stamp_8",
-                            Email = "user8@example.com",
-                            EmailConfirmed = true,
-                            LockoutEnabled = false,
-                            NormalizedEmail = "USER8@EXAMPLE.COM",
-                            NormalizedUserName = "USER8@EXAMPLE.COM",
-                            PasswordHash = "hashed_password_8",
-                            PhoneNumberConfirmed = false,
-                            SecurityStamp = "security_stamp_8",
-                            TwoFactorEnabled = false,
-                            UserName = "user8@example.com"
-                        },
-                        new
-                        {
-                            Id = "user9",
-                            AccessFailedCount = 0,
-                            ConcurrencyStamp = "concurrency_stamp_9",
-                            Email = "user9@example.com",
-                            EmailConfirmed = true,
-                            LockoutEnabled = false,
-                            NormalizedEmail = "USER9@EXAMPLE.COM",
-                            NormalizedUserName = "USER9@EXAMPLE.COM",
-                            PasswordHash = "hashed_password_9",
-                            PhoneNumberConfirmed = false,
-                            SecurityStamp = "security_stamp_9",
-                            TwoFactorEnabled = false,
-                            UserName = "user9@example.com"
-                        },
-                        new
-                        {
-                            Id = "user10",
-                            AccessFailedCount = 0,
-                            ConcurrencyStamp = "concurrency_stamp_10",
-                            Email = "user10@example.com",
-                            EmailConfirmed = true,
-                            LockoutEnabled = false,
-                            NormalizedEmail = "USER10@EXAMPLE.COM",
-                            NormalizedUserName = "USER10@EXAMPLE.COM",
-                            PasswordHash = "hashed_password_10",
-                            PhoneNumberConfirmed = false,
-                            SecurityStamp = "security_stamp_10",
-                            TwoFactorEnabled = false,
-                            UserName = "user10@example.com"
-                        });
                 });
 
             modelBuilder.Entity("CCP.Models.BreederModels.Breeder", b =>
@@ -257,8 +98,16 @@ namespace CCP.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int?>("CountryID")
                         .HasColumnType("int");
+
+                    b.Property<string>("Mobile")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -276,29 +125,6 @@ namespace CCP.Migrations
                         .IsUnique();
 
                     b.ToTable("Breeder");
-
-                    b.HasData(
-                        new
-                        {
-                            ID = 1,
-                            CountryID = 1,
-                            Name = "John Smith",
-                            UserID = "user1"
-                        },
-                        new
-                        {
-                            ID = 2,
-                            CountryID = 2,
-                            Name = "Alice Johnson",
-                            UserID = "user2"
-                        },
-                        new
-                        {
-                            ID = 3,
-                            CountryID = 3,
-                            Name = "David Brown",
-                            UserID = "user3"
-                        });
                 });
 
             modelBuilder.Entity("CCP.Models.Country", b =>
@@ -320,128 +146,6 @@ namespace CCP.Migrations
                     b.HasKey("ID");
 
                     b.ToTable("Country");
-
-                    b.HasData(
-                        new
-                        {
-                            ID = 1,
-                            Continent = "Europe",
-                            Name = "Denmark"
-                        },
-                        new
-                        {
-                            ID = 2,
-                            Continent = "Europe",
-                            Name = "United Kingdom"
-                        },
-                        new
-                        {
-                            ID = 3,
-                            Continent = "North America",
-                            Name = "Canada"
-                        },
-                        new
-                        {
-                            ID = 4,
-                            Continent = "Australia",
-                            Name = "Australia"
-                        },
-                        new
-                        {
-                            ID = 5,
-                            Continent = "South America",
-                            Name = "Brazil"
-                        },
-                        new
-                        {
-                            ID = 6,
-                            Continent = "Europe",
-                            Name = "Russia"
-                        },
-                        new
-                        {
-                            ID = 7,
-                            Continent = "Asia",
-                            Name = "India"
-                        },
-                        new
-                        {
-                            ID = 8,
-                            Continent = "Africa",
-                            Name = "South Africa"
-                        },
-                        new
-                        {
-                            ID = 9,
-                            Continent = "South America",
-                            Name = "Argentina"
-                        },
-                        new
-                        {
-                            ID = 10,
-                            Continent = "Asia",
-                            Name = "Japan"
-                        },
-                        new
-                        {
-                            ID = 11,
-                            Continent = "Europe",
-                            Name = "Germany"
-                        },
-                        new
-                        {
-                            ID = 12,
-                            Continent = "Europe",
-                            Name = "France"
-                        },
-                        new
-                        {
-                            ID = 13,
-                            Continent = "North America",
-                            Name = "Mexico"
-                        },
-                        new
-                        {
-                            ID = 14,
-                            Continent = "Africa",
-                            Name = "Egypt"
-                        },
-                        new
-                        {
-                            ID = 15,
-                            Continent = "Europe",
-                            Name = "Italy"
-                        },
-                        new
-                        {
-                            ID = 16,
-                            Continent = "Asia",
-                            Name = "Thailand"
-                        },
-                        new
-                        {
-                            ID = 17,
-                            Continent = "Europe",
-                            Name = "Greece"
-                        },
-                        new
-                        {
-                            ID = 18,
-                            Continent = "Africa",
-                            Name = "Nigeria"
-                        },
-                        new
-                        {
-                            ID = 19,
-                            Continent = "Europe",
-                            Name = "Sweden"
-                        },
-                        new
-                        {
-                            ID = 20,
-                            Continent = "Asia",
-                            Name = "China"
-                        });
                 });
 
             modelBuilder.Entity("CCP.Models.DogModels.ChampionshipTitle", b =>
@@ -465,20 +169,6 @@ namespace CCP.Migrations
                     b.HasIndex("OfficialTitleID");
 
                     b.ToTable("ChampionshipTitle");
-
-                    b.HasData(
-                        new
-                        {
-                            ID = 1,
-                            DogID = 1,
-                            OfficialTitleID = 1
-                        },
-                        new
-                        {
-                            ID = 2,
-                            DogID = 2,
-                            OfficialTitleID = 2
-                        });
                 });
 
             modelBuilder.Entity("CCP.Models.DogModels.Dog", b =>
@@ -492,8 +182,8 @@ namespace CCP.Migrations
                     b.Property<string>("BreederID")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<int?>("Coat")
-                        .HasColumnType("int");
+                    b.Property<string>("Coat")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Color")
                         .HasColumnType("nvarchar(max)");
@@ -501,8 +191,8 @@ namespace CCP.Migrations
                     b.Property<DateTime?>("DOB")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("Gender")
-                        .HasColumnType("int");
+                    b.Property<string>("Gender")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal?>("Height")
                         .HasColumnType("decimal(18,2)");
@@ -538,55 +228,6 @@ namespace CCP.Migrations
                     b.HasIndex("OwnerID");
 
                     b.ToTable("Dog");
-
-                    b.HasData(
-                        new
-                        {
-                            ID = 1,
-                            BreederID = "user2",
-                            Coat = 0,
-                            Color = "Brown",
-                            DOB = new DateTime(2019, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Gender = 0,
-                            Height = 24.5m,
-                            OwnerID = "user2",
-                            PetName = "Pet1",
-                            RegName = "Dog1",
-                            RegNo = "RegNo1",
-                            Weight = 55.2m,
-                            YearOfDeath = new DateTime(2021, 5, 10, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            ID = 2,
-                            Coat = 1,
-                            Color = "White",
-                            DOB = new DateTime(2019, 9, 3, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Gender = 1,
-                            Height = 18.3m,
-                            KennelID = "user1",
-                            OwnerID = "user1",
-                            PetName = "Buddy",
-                            RegName = "Dog2",
-                            RegNo = "D67890",
-                            Weight = 42.7m
-                        },
-                        new
-                        {
-                            ID = 3,
-                            BreederID = "user3",
-                            Coat = 1,
-                            Color = "Red",
-                            DOB = new DateTime(2014, 9, 7, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Gender = 1,
-                            Height = 18.3m,
-                            KennelID = "user3",
-                            OwnerID = "user3",
-                            PetName = "Kiki",
-                            RegName = "Dog3",
-                            RegNo = "D67893",
-                            Weight = 42.7m
-                        });
                 });
 
             modelBuilder.Entity("CCP.Models.DogModels.OfficialTitle", b =>
@@ -608,50 +249,6 @@ namespace CCP.Migrations
                     b.HasKey("ID");
 
                     b.ToTable("OfficialTitle");
-
-                    b.HasData(
-                        new
-                        {
-                            ID = 1,
-                            FullTitle = "Champion of the Show",
-                            Title = "Champion"
-                        },
-                        new
-                        {
-                            ID = 2,
-                            FullTitle = "Grand Champion of the Show",
-                            Title = "Grand Champion"
-                        },
-                        new
-                        {
-                            ID = 3,
-                            FullTitle = "Best in Breed Award",
-                            Title = "Best in Breed"
-                        },
-                        new
-                        {
-                            ID = 4,
-                            FullTitle = "Best in Show Award",
-                            Title = "Best in Show"
-                        },
-                        new
-                        {
-                            ID = 5,
-                            FullTitle = "Reserve Champion of the Show",
-                            Title = "Reserve Champion"
-                        },
-                        new
-                        {
-                            ID = 6,
-                            FullTitle = "Best Puppy Award",
-                            Title = "Best Puppy"
-                        },
-                        new
-                        {
-                            ID = 7,
-                            FullTitle = "Best Veteran Award",
-                            Title = "Best Veteran"
-                        });
                 });
 
             modelBuilder.Entity("CCP.Models.DogModels.Pedigree", b =>
@@ -680,20 +277,6 @@ namespace CCP.Migrations
                     b.HasIndex("SireID");
 
                     b.ToTable("pedigree");
-
-                    b.HasData(
-                        new
-                        {
-                            ID = 1,
-                            LitterID = 2
-                        },
-                        new
-                        {
-                            ID = 2,
-                            DamID = 3,
-                            LitterID = 2,
-                            SireID = 1
-                        });
                 });
 
             modelBuilder.Entity("CCP.Models.KennelModels.Kennel", b =>
@@ -745,32 +328,6 @@ namespace CCP.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Kennel");
-
-                    b.HasData(
-                        new
-                        {
-                            ID = 1,
-                            About = "Kennel Description 1",
-                            Address = "Kennel Address 1",
-                            CountryID = 1,
-                            Mobile = "987-654-3210",
-                            Name = "Kennel1",
-                            OwnerName = "Owner1",
-                            Phone = "123-456-7890",
-                            WebsiteURL = "https://www.kennel1.com"
-                        },
-                        new
-                        {
-                            ID = 2,
-                            About = "Kennel Description 2",
-                            Address = "Kennel Address 2",
-                            CountryID = 2,
-                            Mobile = "876-543-2109",
-                            Name = "Kennel2",
-                            OwnerName = "Owner2",
-                            Phone = "234-567-8901",
-                            WebsiteURL = "https://www.kennel2.com"
-                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
