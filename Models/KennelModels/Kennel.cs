@@ -14,6 +14,7 @@ namespace CCP.Models.KennelModels
         public string Mobile { get; set; }
         public string About { get; set; }
 
+        public ImagesMetaData Logo { get; set; }
         public CCPUser User { get; set; }
         public Country Country { get; set; }
     }

@@ -696,6 +696,46 @@ namespace CCP.Migrations
                         });
                 });
 
+            modelBuilder.Entity("CCP.Models.ImagesMetaData", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("DogID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ImagePath")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("KennelId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("UploadDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DogID");
+
+                    b.HasIndex("KennelId")
+                        .IsUnique();
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("ImagesMetaData");
+                });
+
             modelBuilder.Entity("CCP.Models.KennelModels.Kennel", b =>
                 {
                     b.Property<int>("ID")
@@ -996,6 +1036,29 @@ namespace CCP.Migrations
                     b.Navigation("Sire");
                 });
 
+            modelBuilder.Entity("CCP.Models.ImagesMetaData", b =>
+                {
+                    b.HasOne("CCP.Models.DogModels.Dog", "Dog")
+                        .WithMany()
+                        .HasForeignKey("DogID");
+
+                    b.HasOne("CCP.Models.KennelModels.Kennel", "Kennel")
+                        .WithOne("Logo")
+                        .HasForeignKey("CCP.Models.ImagesMetaData", "KennelId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CCP.Areas.Identity.Data.CCPUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("Dog");
+
+                    b.Navigation("Kennel");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("CCP.Models.KennelModels.Kennel", b =>
                 {
                     b.HasOne("CCP.Models.Country", "Country")
@@ -1092,6 +1155,12 @@ namespace CCP.Migrations
             modelBuilder.Entity("CCP.Models.DogModels.OfficialTitle", b =>
                 {
                     b.Navigation("Champions");
+                });
+
+            modelBuilder.Entity("CCP.Models.KennelModels.Kennel", b =>
+                {
+                    b.Navigation("Logo")
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }
