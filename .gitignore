@@ -11,6 +11,8 @@
 *.userosscache
 *.sln.docstates
 **/obj/
+.vs/
+
 appsettings.json
 appsettings.Development.json
 

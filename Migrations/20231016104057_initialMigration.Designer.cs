@@ -4,6 +4,7 @@ using CCP.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CCP.Migrations
 {
     [DbContext(typeof(CCPContext))]
-    partial class CCPContextModelSnapshot : ModelSnapshot
+    [Migration("20231016104057_initialMigration")]
+    partial class initialMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -696,46 +699,6 @@ namespace CCP.Migrations
                         });
                 });
 
-            modelBuilder.Entity("CCP.Models.ImagesMetaData", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int?>("DogID")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ImagePath")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("KennelId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("UploadDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DogID");
-
-                    b.HasIndex("KennelId")
-                        .IsUnique();
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("ImagesMetaData");
-                });
-
             modelBuilder.Entity("CCP.Models.KennelModels.Kennel", b =>
                 {
                     b.Property<int>("ID")
@@ -761,7 +724,7 @@ namespace CCP.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("OwnerName")
                         .IsRequired()
@@ -772,7 +735,6 @@ namespace CCP.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("WebsiteURL")
@@ -783,11 +745,7 @@ namespace CCP.Migrations
 
                     b.HasIndex("CountryID");
 
-                    b.HasIndex("Name")
-                        .IsUnique();
-
-                    b.HasIndex("UserId")
-                        .IsUnique();
+                    b.HasIndex("UserId");
 
                     b.ToTable("Kennel");
 
@@ -802,7 +760,6 @@ namespace CCP.Migrations
                             Name = "Kennel1",
                             OwnerName = "Owner1",
                             Phone = "123-456-7890",
-                            UserId = "User1",
                             WebsiteURL = "https://www.kennel1.com"
                         },
                         new
@@ -815,7 +772,6 @@ namespace CCP.Migrations
                             Name = "Kennel2",
                             OwnerName = "Owner2",
                             Phone = "234-567-8901",
-                            UserId = "User2",
                             WebsiteURL = "https://www.kennel2.com"
                         });
                 });
@@ -1043,29 +999,6 @@ namespace CCP.Migrations
                     b.Navigation("Sire");
                 });
 
-            modelBuilder.Entity("CCP.Models.ImagesMetaData", b =>
-                {
-                    b.HasOne("CCP.Models.DogModels.Dog", "Dog")
-                        .WithMany()
-                        .HasForeignKey("DogID");
-
-                    b.HasOne("CCP.Models.KennelModels.Kennel", "Kennel")
-                        .WithOne("Logo")
-                        .HasForeignKey("CCP.Models.ImagesMetaData", "KennelId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("CCP.Areas.Identity.Data.CCPUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
-
-                    b.Navigation("Dog");
-
-                    b.Navigation("Kennel");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("CCP.Models.KennelModels.Kennel", b =>
                 {
                     b.HasOne("CCP.Models.Country", "Country")
@@ -1075,10 +1008,8 @@ namespace CCP.Migrations
                         .IsRequired();
 
                     b.HasOne("CCP.Areas.Identity.Data.CCPUser", "User")
-                        .WithOne("Kennel")
-                        .HasForeignKey("CCP.Models.KennelModels.Kennel", "UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .WithMany("Kennel")
+                        .HasForeignKey("UserId");
 
                     b.Navigation("Country");
 
@@ -1147,8 +1078,7 @@ namespace CCP.Migrations
 
                     b.Navigation("DogOwner");
 
-                    b.Navigation("Kennel")
-                        .IsRequired();
+                    b.Navigation("Kennel");
                 });
 
             modelBuilder.Entity("CCP.Models.DogModels.Dog", b =>
@@ -1165,12 +1095,6 @@ namespace CCP.Migrations
             modelBuilder.Entity("CCP.Models.DogModels.OfficialTitle", b =>
                 {
                     b.Navigation("Champions");
-                });
-
-            modelBuilder.Entity("CCP.Models.KennelModels.Kennel", b =>
-                {
-                    b.Navigation("Logo")
-                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

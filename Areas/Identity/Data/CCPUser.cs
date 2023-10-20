@@ -14,7 +14,7 @@ namespace CCP.Areas.Identity.Data;
 public class CCPUser : IdentityUser
 {
     public Breeder Breeder { get; set; }
-    public ICollection<Kennel> Kennel { get; set; }
+    public Kennel Kennel { get; set; }
 
     public ICollection<Dog> DogOwner { get; set; }
     public ICollection<Dog> DogBreeder { get; set; }

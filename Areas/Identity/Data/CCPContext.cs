@@ -75,7 +75,11 @@ public class CCPContext : IdentityDbContext<CCPUser>
             builder.Entity<Dog>().HasOne(d => d.Owner).WithMany(u => u.DogOwner).HasForeignKey(d => d.OwnerID).OnDelete(DeleteBehavior.NoAction);
             builder.Entity<Dog>().HasOne(d => d.Breeder).WithMany(u => u.DogBreeder).HasForeignKey(d => d.BreederID).OnDelete(DeleteBehavior.NoAction);
             builder.Entity<Dog>().HasOne(d => d.Kennel).WithMany(u => u.DogKennel).HasForeignKey(d => d.KennelID).OnDelete(DeleteBehavior.NoAction);
-
+        
+        //Make kennel name unique
+        builder.Entity<Kennel>()
+        .HasIndex(k => k.Name)
+        .IsUnique();
 
 
         /*  Breeder Country cascade   */
@@ -375,6 +379,7 @@ public class CCPContext : IdentityDbContext<CCPUser>
             Phone = "123-456-7890",
             Mobile = "987-654-3210",
             About = "Kennel Description 1",
+            UserId = "User1"
         },
         new Kennel
         {
@@ -387,6 +392,7 @@ public class CCPContext : IdentityDbContext<CCPUser>
             Phone = "234-567-8901",
             Mobile = "876-543-2109",
             About = "Kennel Description 2",
+            UserId = "User2"
         });
 
         // Seed data for Official Titles

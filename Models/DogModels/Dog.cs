@@ -14,18 +14,8 @@ namespace CCP.Models.DogModels
         public DateTime? DOB { get; set; }
         public DateTime? YearOfDeath { get; set; }
         public Coats? Coat { get; set; } // Null allowed as an inital value requirement handled in view
-        public enum Coats
-        {
-            Hairless,
-            Powderpuff
-        }
         public Genders? Gender { get; set; }
 
-        public enum Genders
-        {
-            Male,
-            Female
-        }
         public string? Color { get; set; }
         public decimal? Height { get; set; }
         public decimal? Weight { get; set; }
@@ -50,6 +40,18 @@ namespace CCP.Models.DogModels
         public string? KennelID { get; set; }
         [ForeignKey("KennelID")]
         public CCPUser? Kennel { get; set; }
+    }
+
+    public enum Coats
+    {
+        Hairless,
+        Powderpuff
+    }
+
+    public enum Genders
+    {
+        Male,
+        Female
     }
 }
 
