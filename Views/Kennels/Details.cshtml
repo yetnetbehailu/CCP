@@ -8,6 +8,12 @@
 
 <div>
     <h4>Kennel</h4>
+    @if(Model.Logo != null)
+    {
+        <div class="col-sm-10">
+            <img src="@Url.Action("GetLogo", "Kennels", new{logoName = Model.Logo.Name})" alt="Kennel Logo" width="100px" height="100px"/>
+        </div>
+    }
     <hr />
     <dl class="row">
         <dt class = "col-sm-2">
