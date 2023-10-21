@@ -6,10 +6,13 @@
 # User-specific files
 *.rsuser
 *.suo
+.vs/
 *.user
 *.userosscache
 *.sln.docstates
 **/obj/
+.vs/
+
 appsettings.json
 appsettings.Development.json
 
