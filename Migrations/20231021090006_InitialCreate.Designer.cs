@@ -4,6 +4,7 @@ using CCP.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CCP.Migrations
 {
     [DbContext(typeof(CCPContext))]
-    partial class CCPContextModelSnapshot : ModelSnapshot
+    [Migration("20231021090006_InitialCreate")]
+    partial class InitialCreate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -287,19 +290,15 @@ namespace CCP.Migrations
                         new
                         {
                             ID = 1,
-                            Address = "Breeder Address 1",
                             CountryID = 1,
                             Name = "John Smith",
-                            Phone = "123-456-1234",
                             UserID = "user1"
                         },
                         new
                         {
                             ID = 2,
-                            Address = "Breeder Address 2",
                             CountryID = 2,
                             Name = "Alice Johnson",
-                            Phone = "123-456-1235",
                             UserID = "user2"
                         },
                         new
@@ -1179,7 +1178,8 @@ namespace CCP.Migrations
 
             modelBuilder.Entity("CCP.Models.KennelModels.Kennel", b =>
                 {
-                    b.Navigation("Logo");
+                    b.Navigation("Logo")
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

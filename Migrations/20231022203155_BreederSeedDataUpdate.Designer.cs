@@ -4,6 +4,7 @@ using CCP.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CCP.Migrations
 {
     [DbContext(typeof(CCPContext))]
-    partial class CCPContextModelSnapshot : ModelSnapshot
+    [Migration("20231022203155_BreederSeedDataUpdate")]
+    partial class BreederSeedDataUpdate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1179,7 +1182,8 @@ namespace CCP.Migrations
 
             modelBuilder.Entity("CCP.Models.KennelModels.Kennel", b =>
                 {
-                    b.Navigation("Logo");
+                    b.Navigation("Logo")
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }
