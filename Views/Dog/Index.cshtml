@@ -1,0 +1,107 @@
+﻿@model List<CCP.ViewModels.DogViewModel>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model[0].Dog.RegName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model[0].Dog.RegNo)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model[0].Dog.PetName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model[0].Dog.DOB)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model[0].Dog.YearOfDeath)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model[0].Dog.Coat)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model[0].Dog.Gender)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model[0].Dog.Color)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model[0].Dog.Height)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model[0].Dog.Weight)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model[0].Dog.Owner)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model[0].Dog.Breeder)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model[0].Dog.Kennel)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Dog.RegName)
+            </td>
+            <td>
+                    @Html.DisplayFor(modelItem => item.Dog.RegNo)
+            </td>
+            <td>
+                    @Html.DisplayFor(modelItem => item.Dog.PetName)
+            </td>
+            <td>
+                    @Html.DisplayFor(modelItem => item.Dog.DOB)
+            </td>
+            <td>
+                    @Html.DisplayFor(modelItem => item.Dog.YearOfDeath)
+            </td>
+            <td>
+                    @Html.DisplayFor(modelItem => item.Dog.Coat)
+            </td>
+            <td>
+                    @Html.DisplayFor(modelItem => item.Dog.Gender)
+            </td>
+            <td>
+                    @Html.DisplayFor(modelItem => item.Dog.Color)
+            </td>
+            <td>
+                    @Html.DisplayFor(modelItem => item.Dog.Height)
+            </td>
+            <td>
+                    @Html.DisplayFor(modelItem => item.Dog.Weight)
+            </td>
+            <td>
+                    @Html.DisplayFor(modelItem => item.Dog.Owner.Id)
+            </td>
+            <td>
+                    @Html.DisplayFor(modelItem => item.Breeder.UserID)
+            </td>
+            <td>
+                    @Html.DisplayFor(modelItem => item.Kennel.UserId)
+            </td>
+            <td>
+                    <a asp-action="Edit" asp-route-id="@item.Dog.ID">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.Dog.ID">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Dog.ID">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

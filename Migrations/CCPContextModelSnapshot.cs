@@ -281,7 +281,7 @@ namespace CCP.Migrations
                     b.HasIndex("UserID")
                         .IsUnique();
 
-                    b.ToTable("Breeder");
+                    b.ToTable("Breeder", (string)null);
 
                     b.HasData(
                         new
@@ -329,7 +329,7 @@ namespace CCP.Migrations
 
                     b.HasKey("ID");
 
-                    b.ToTable("Country");
+                    b.ToTable("Country", (string)null);
 
                     b.HasData(
                         new
@@ -474,7 +474,7 @@ namespace CCP.Migrations
 
                     b.HasIndex("OfficialTitleID");
 
-                    b.ToTable("ChampionshipTitle");
+                    b.ToTable("ChampionshipTitle", (string)null);
 
                     b.HasData(
                         new
@@ -547,7 +547,7 @@ namespace CCP.Migrations
 
                     b.HasIndex("OwnerID");
 
-                    b.ToTable("Dog");
+                    b.ToTable("Dog", (string)null);
 
                     b.HasData(
                         new
@@ -617,7 +617,7 @@ namespace CCP.Migrations
 
                     b.HasKey("ID");
 
-                    b.ToTable("OfficialTitle");
+                    b.ToTable("OfficialTitle", (string)null);
 
                     b.HasData(
                         new
@@ -689,7 +689,7 @@ namespace CCP.Migrations
 
                     b.HasIndex("SireID");
 
-                    b.ToTable("pedigree");
+                    b.ToTable("pedigree", (string)null);
 
                     b.HasData(
                         new
@@ -743,7 +743,7 @@ namespace CCP.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("ImagesMetaData");
+                    b.ToTable("ImagesMetaData", (string)null);
                 });
 
             modelBuilder.Entity("CCP.Models.KennelModels.Kennel", b =>
@@ -799,7 +799,7 @@ namespace CCP.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("Kennel");
+                    b.ToTable("Kennel", (string)null);
 
                     b.HasData(
                         new
