@@ -48,7 +48,7 @@ namespace CCP.Controllers
 
             if (userExist != null)
             {
-                if (userExist.Breeder == null) //  If the user exists, then check if their Breeder navigation property is null. If it is null, that means they don't have a Breeder associated with them, enable to create one
+                if (userExist.Breeder == null) // If the user exists, then check if their Breeder navigation property is null. If it is null, that means they don't have a Breeder associated with them, enable to create one
                 {
                     // Associate the logged-in user with the new Breeder
                     breeder.UserID = currentUserId;
@@ -62,5 +62,111 @@ namespace CCP.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+
+        // GET: Breeder/Edit/id
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var breeder = await _context.Breeder.FindAsync(id);
+            if (breeder == null)
+            {
+                return NotFound();
+            }
+
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (breeder.UserID != currentUserId)
+            {
+                return Forbid(); // Return a forbidden response
+            }
+
+            var countries = _context.Country.ToList();
+            ViewData["CountryList"] = new SelectList(countries, "ID", "Name", breeder.CountryID);
+            return View(breeder);
+        }
+
+        // POST: Breeder/Edit/id
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize]
+        public async Task<IActionResult> Edit(int id, Breeder breeder) // Breeder UserId is null here
+        {
+            if (id == breeder.ID)
+            {
+                var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                // Set the breeder UserID to the current user's ID since userId wasn't captured during the edit form post
+                breeder.UserID = currentUserId;
+                _context.Update(breeder); // Updates the breeder object
+                await _context.SaveChangesAsync();
+
+                var countries = _context.Country.ToList();
+                ViewData["CountryList"] = new SelectList(countries, "ID", "Name", breeder.CountryID);
+                return RedirectToAction(nameof(Index));
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
+
+        // Get: Breeder/Delete/id
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var breeder = await _context.Breeder.Include(b => b.Country).Include(b => b.User)
+                .FirstOrDefaultAsync(b => b.ID == id);
+
+            if (breeder == null)
+            {
+                return NotFound();
+            }
+
+            return View(breeder);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var breeder = await _context.Breeder.FindAsync(id);
+            if (breeder == null)
+            {
+                return NotFound();
+            }
+
+            _context.Breeder.Remove(breeder); // Deletes the specific Breeder entity by id
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        // GET: Breeder/Details/id
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var breeder = await _context.Breeder.Include(b => b.User).Include(b => b.Country)
+                .FirstOrDefaultAsync(m => m.ID == id);
+
+            if (breeder == null)
+            {
+                return NotFound();
+            }
+
+            return View(breeder);
+        }
+
     }
 }
