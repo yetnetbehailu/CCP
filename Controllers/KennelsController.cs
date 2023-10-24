@@ -16,6 +16,7 @@ using Amazon.S3.Model;
 using Microsoft.AspNetCore.Identity;
 using CCP.Areas.Identity.Data;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Data.SqlClient;
 
 namespace CCP.Controllers
 {
@@ -84,43 +85,64 @@ namespace CCP.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(KennelLogoVM vm)
         {
-            var user = await _context.User.FirstOrDefaultAsync(u => u.Id == vm.Kennel.UserId);
-            if(user == null || user.Id != vm.Kennel.UserId)
+            try
             {
-                return RedirectToAction("Login", "Account");
-            }
-            if(vm.Kennel != null)
-            {
-                Kennel newKennel = vm.Kennel;
-                
-                if(vm.Logo != null)
-                {
-                    string bucketName = "ccpgroupbucket";
-                    var accessKey = _configuration["AwsAccessKey"];
-                    var secretKey = _configuration["AwsSecretKey"];
-                    using(var client = new AmazonS3Client(accessKey, secretKey, RegionEndpoint.EUNorth1))
-                    {
-                        var imageName = Guid.NewGuid().ToString() + Path.GetExtension(vm.Logo.FileName);
-                        var fileTransfer = new TransferUtility(client);
+                var user = await _context.User.FirstOrDefaultAsync(u => u.Id == vm.Kennel.UserId);
 
-                        using(var stream = vm.Logo.OpenReadStream())
-                        {
-                            await fileTransfer.UploadAsync(stream, bucketName, imageName);
-                        }
-                        newKennel.Logo = new ImagesMetaData
-                        {
-                            Name = imageName,
-                            ImagePath = $"https://{bucketName}.s3.amazonaws.com/{imageName}",
-                            UploadDate = DateTime.Now,
-                            Kennel = newKennel
-                        };
-                    }
-                    _context.Add(newKennel.Logo);
+                if (user == null || user.Id != vm.Kennel.UserId)
+                {
+                    return RedirectToAction("Login", "Account");
                 }
-                _context.Add(newKennel);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                if (vm.Kennel != null)
+                {
+                    Kennel newKennel = vm.Kennel;
+                    Kennel kennelWithSameName = await _context.Kennel.FirstOrDefaultAsync(k => k.Name == newKennel.Name);
+
+                    if (vm.Logo != null)
+                    {
+                        string bucketName = "ccpgroupbucket";
+                        var accessKey = _configuration["AwsAccessKey"];
+                        var secretKey = _configuration["AwsSecretKey"];
+                        using (var client = new AmazonS3Client(accessKey, secretKey, RegionEndpoint.EUNorth1))
+                        {
+                            var imageName = Guid.NewGuid().ToString() + Path.GetExtension(vm.Logo.FileName);
+                            var fileTransfer = new TransferUtility(client);
+
+                            using (var stream = vm.Logo.OpenReadStream())
+                            {
+                                await fileTransfer.UploadAsync(stream, bucketName, imageName);
+                            }
+                            newKennel.Logo = new ImagesMetaData
+                            {
+                                Name = imageName,
+                                ImagePath = $"https://{bucketName}.s3.amazonaws.com/{imageName}",
+                                UploadDate = DateTime.Now,
+                                Kennel = newKennel
+                            };
+                        }
+                        _context.Add(newKennel.Logo);
+                    }
+                    _context.Add(newKennel);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
+                }
             }
+            catch(DbUpdateException ex)
+            {
+                // Check if the exception is due to a unique constraint violation
+                var innerException = ex.InnerException;
+                if (innerException != null && innerException is SqlException sqlEx &&
+                    (sqlEx.Number == 2601 || sqlEx.Number == 2627)) // These numbers correspond to unique constraint violations
+                {
+                    ModelState.AddModelError("Kennel.Name", "The kennel name is already taken.");
+                }
+                else
+                {
+                    // Handle other types of database exceptions or log the error
+                    ModelState.AddModelError(string.Empty, "An error occurred while saving. Please try again.");
+                }
+            }
+            
             
             ViewData["CountryID"] = new SelectList(_context.Country, "ID", "ID", vm.Kennel.CountryID);
             return View(vm);
@@ -250,6 +272,7 @@ namespace CCP.Controllers
 
             var kennel = await _context.Kennel
                 .Include(k => k.Country)
+                .Include(k => k.Logo)
                 .FirstOrDefaultAsync(m => m.ID == id);
             if (kennel == null)
             {
@@ -268,9 +291,13 @@ namespace CCP.Controllers
             {
                 return Problem("Entity set 'CCPContext.Kennel'  is null.");
             }
-            var kennel = await _context.Kennel.FindAsync(id);
+            var kennel = await _context.Kennel.Include(k => k.Logo).FirstOrDefaultAsync(k => k.ID == id);
             if (kennel != null)
             {
+                if(kennel.Logo != null)
+                {
+                    _context.ImagesMetaData.Remove(kennel.Logo);
+                }
                 _context.Kennel.Remove(kennel);
             }
             
