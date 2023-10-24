@@ -148,5 +148,25 @@ namespace CCP.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+
+        // GET: Breeder/Details/id
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var breeder = await _context.Breeder.Include(b => b.User).Include(b => b.Country)
+                .FirstOrDefaultAsync(m => m.ID == id);
+
+            if (breeder == null)
+            {
+                return NotFound();
+            }
+
+            return View(breeder);
+        }
+
     }
 }
