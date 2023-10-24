@@ -1,4 +1,4 @@
-﻿@model CCP.Models.KennelModels.Kennel
+﻿@model CCP.ViewModels.KennelLogoVM
 
 @{
     ViewData["Title"] = "Edit";
@@ -10,48 +10,59 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Edit">
+        <form asp-action="Edit" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="ID" />
+            <input type="hidden" asp-for="Kennel.ID" />
             <div class="form-group">
-                <label asp-for="CountryID" class="control-label"></label>
-                <select asp-for="CountryID" class="form-control" asp-items="ViewBag.CountryID"></select>
-                <span asp-validation-for="CountryID" class="text-danger"></span>
+                <label asp-for="Kennel.CountryID" class="control-label"></label>
+                <select asp-for="Kennel.CountryID" class="form-control" asp-items="ViewBag.CountryID"></select>
+                <span asp-validation-for="Kennel.CountryID" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
+                <label asp-for="Kennel.Name" class="control-label"></label>
+                <input asp-for="Kennel.Name" class="form-control" />
+                <span asp-validation-for="Kennel.Name" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="OwnerName" class="control-label"></label>
-                <input asp-for="OwnerName" class="form-control" />
-                <span asp-validation-for="OwnerName" class="text-danger"></span>
+                <label asp-for="Kennel.OwnerName" class="control-label"></label>
+                <input asp-for="Kennel.OwnerName" class="form-control" />
+                <span asp-validation-for="Kennel.OwnerName" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="WebsiteURL" class="control-label"></label>
-                <input asp-for="WebsiteURL" class="form-control" />
-                <span asp-validation-for="WebsiteURL" class="text-danger"></span>
+                <label asp-for="Kennel.WebsiteURL" class="control-label"></label>
+                <input asp-for="Kennel.WebsiteURL" class="form-control" />
+                <span asp-validation-for="Kennel.WebsiteURL" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Address" class="control-label"></label>
-                <input asp-for="Address" class="form-control" />
-                <span asp-validation-for="Address" class="text-danger"></span>
+                <label asp-for="Kennel.Address" class="control-label"></label>
+                <input asp-for="Kennel.Address" class="form-control" />
+                <span asp-validation-for="Kennel.Address" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Phone" class="control-label"></label>
-                <input asp-for="Phone" class="form-control" />
-                <span asp-validation-for="Phone" class="text-danger"></span>
+                <label asp-for="Kennel.Phone" class="control-label"></label>
+                <input asp-for="Kennel.Phone" class="form-control" />
+                <span asp-validation-for="Kennel.Phone" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Mobile" class="control-label"></label>
-                <input asp-for="Mobile" class="form-control" />
-                <span asp-validation-for="Mobile" class="text-danger"></span>
+                <label asp-for="Kennel.Mobile" class="control-label"></label>
+                <input asp-for="Kennel.Mobile" class="form-control" />
+                <span asp-validation-for="Kennel.Mobile" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="About" class="control-label"></label>
-                <input asp-for="About" class="form-control" />
-                <span asp-validation-for="About" class="text-danger"></span>
+                <label asp-for="Kennel.About" class="control-label"></label>
+                <input asp-for="Kennel.About" class="form-control" />
+                <span asp-validation-for="Kennel.About" class="text-danger"></span>
+            </div>
+            @if (Model.Kennel.Logo != null)
+            {
+                <div class="col-sm-10">
+                    <img src="@Url.Action("GetLogo", "Kennels", new { logoName = Model.Kennel.Logo.Name })" alt="Kennel Logo" width="50px" height="50px" />
+                </div>
+            }
+            <div class="form-group mb-3">
+                <label asp-for="@Model.Logo" class="control-label">Logo</label>
+                <input asp-for="@Model.Logo" type="file" class="form-control" id="inputImage" accept=".jpg, .jpeg, .png">
+                <span asp-validation-for="@Model.Logo" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />

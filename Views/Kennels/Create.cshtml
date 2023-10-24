@@ -3,6 +3,11 @@
 @{
     ViewData["Title"] = "Create";
 }
+@using Microsoft.AspNetCore.Identity
+@using CCP.Areas.Identity.Data
+
+@inject SignInManager<CCPUser> SignInManager
+@inject UserManager<CCPUser> UserManager
 
 <h1>Create</h1>
 
@@ -56,6 +61,12 @@
                 <input asp-for="Logo" type="file" class="form-control" accept=".jpg, .jpeg, .png" />
                 <span asp-validation-for="Logo" class="text-danger"></span>
             </div>
+            @if (SignInManager.IsSignedIn(User))
+            {
+                var user = await UserManager.GetUserAsync(User);
+                var userId = await UserManager.GetUserIdAsync(user);
+                <input type="hidden" asp-for="Kennel.UserId" value="@userId" />
+            }
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>

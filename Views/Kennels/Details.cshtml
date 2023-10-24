@@ -3,7 +3,11 @@
 @{
     ViewData["Title"] = "Details";
 }
+@using Microsoft.AspNetCore.Identity
+@using CCP.Areas.Identity.Data
 
+@inject SignInManager<CCPUser> SignInManager
+@inject UserManager<CCPUser> UserManager
 <h1>Details</h1>
 
 <div>
@@ -67,6 +71,24 @@
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.ID">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    @if (SignInManager.IsSignedIn(User))
+    {
+        var user = await UserManager.GetUserAsync(User);
+        var userId = await UserManager.GetUserIdAsync(user);
+        if (user == Model.User)
+        {
+            <a asp-action="Edit" asp-route-id="@Model?.ID">Edit</a>
+            <span>|</span>
+            <a asp-action = "Index" > Back to List</a>
+        }
+        else
+        {
+            <a asp-action="Index"> Back to List</a>
+        }
+    }
+    else
+    {
+        <a asp-action="Index"> Back to List</a>
+    }
+
 </div>
