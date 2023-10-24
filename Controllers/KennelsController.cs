@@ -13,6 +13,9 @@ using Amazon;
 using Amazon.S3.Transfer;
 using CCP.Models;
 using Amazon.S3.Model;
+using Microsoft.AspNetCore.Identity;
+using CCP.Areas.Identity.Data;
+using Microsoft.AspNetCore.Hosting;
 
 namespace CCP.Controllers
 {
@@ -20,11 +23,15 @@ namespace CCP.Controllers
     {
         private readonly CCPContext _context;
         private readonly IConfiguration _configuration;
+        private readonly UserManager<CCPUser> _userManager;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public KennelsController(CCPContext context, IConfiguration configuration)
+        public KennelsController(CCPContext context, IConfiguration configuration, UserManager<CCPUser> userManager, IWebHostEnvironment webHostEnvironment)
         {
             _context = context;
             _configuration = configuration;
+            _userManager = userManager;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         // GET: Kennels
@@ -45,6 +52,7 @@ namespace CCP.Controllers
             var kennel = await _context.Kennel
                 .Include(k => k.Country)
                 .Include(k => k.Logo)
+                .Include(k => k.User)
                 .FirstOrDefaultAsync(m => m.ID == id);
             if (kennel == null)
             {
@@ -55,8 +63,19 @@ namespace CCP.Controllers
         }
 
         // GET: Kennels/Create
-        public IActionResult Create()
+        public async Task<IActionResult>  Create()
         {
+            //Get user
+            var user = await _userManager.GetUserAsync(User);
+            if(user != null)
+            {
+                //Get user kennel
+                var userKennel = await _context.Kennel.FirstOrDefaultAsync(k => k.UserId == user.Id);
+                if (userKennel != null)
+                {
+                    return RedirectToAction(nameof(Details), new { id = user.Kennel.ID });
+                }
+            }
             ViewData["CountryID"] = new SelectList(_context.Country, "ID", "Name");
             return View();
         }
@@ -65,6 +84,11 @@ namespace CCP.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(KennelLogoVM vm)
         {
+            var user = await _context.User.FirstOrDefaultAsync(u => u.Id == vm.Kennel.UserId);
+            if(user == null || user.Id != vm.Kennel.UserId)
+            {
+                return RedirectToAction("Login", "Account");
+            }
             if(vm.Kennel != null)
             {
                 Kennel newKennel = vm.Kennel;
@@ -91,8 +115,8 @@ namespace CCP.Controllers
                             Kennel = newKennel
                         };
                     }
+                    _context.Add(newKennel.Logo);
                 }
-                _context.Add(newKennel.Logo);
                 _context.Add(newKennel);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -110,37 +134,96 @@ namespace CCP.Controllers
                 return NotFound();
             }
 
-            var kennel = await _context.Kennel.FindAsync(id);
+            var kennel = await _context.Kennel.Include(k => k.Logo).FirstOrDefaultAsync(k => k.ID == id);
             if (kennel == null)
             {
                 return NotFound();
             }
-            ViewData["CountryID"] = new SelectList(_context.Country, "ID", "ID", kennel.CountryID);
-            return View(kennel);
+            KennelLogoVM vm = new KennelLogoVM
+            {
+                Kennel = kennel
+            };
+            ViewData["CountryID"] = new SelectList(_context.Country, "ID", "Name", kennel.CountryID);
+            return View(vm);
         }
 
-        // POST: Kennels/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ID,CountryID,Name,OwnerName,WebsiteURL,Address,Phone,Mobile,About")] Kennel kennel)
+        public async Task<IActionResult> Edit(int id, KennelLogoVM vm)
         {
-            if (id != kennel.ID)
+            if (id != vm.Kennel.ID)
             {
                 return NotFound();
             }
-
-            if (ModelState.IsValid)
+            
+            if(vm.Kennel != null)
             {
                 try
                 {
-                    _context.Update(kennel);
+                    // Handle kennel details update
+                    var existingKennel = await _context.Kennel.Include(k => k.Logo).FirstOrDefaultAsync(k => k.ID == id);
+
+                    if (existingKennel == null)
+                    {
+                        return NotFound();
+                    }
+
+                    existingKennel.Name = vm.Kennel.Name;
+                    existingKennel.OwnerName = vm.Kennel.OwnerName;
+                    existingKennel.CountryID = vm.Kennel.CountryID;
+                    existingKennel.WebsiteURL = vm.Kennel.WebsiteURL;
+                    existingKennel.Address = vm.Kennel.Address;
+                    existingKennel.Phone = vm.Kennel.Phone;
+                    existingKennel.Mobile = vm.Kennel.Mobile;
+                    existingKennel.About = vm.Kennel.About;
+
+                    if (vm.Logo != null && vm.Logo.Length > 0)
+                    {
+                        string bucketName = "ccpgroupbucket";
+                        var accessKey = _configuration["AwsAccessKey"];
+                        var secretKey = _configuration["AwsSecretKey"];
+                        using (var client = new AmazonS3Client(accessKey, secretKey, RegionEndpoint.EUNorth1))
+                        {
+                            var imageName = Guid.NewGuid().ToString() + Path.GetExtension(vm.Logo.FileName);
+                            var fileTransfer = new TransferUtility(client);
+
+                            using (var stream = vm.Logo.OpenReadStream())
+                            {
+                                await fileTransfer.UploadAsync(stream, bucketName, imageName);
+                            }
+                            // Update the logo information in the existing kennel
+                            if (existingKennel.Logo != null)
+                            {
+                                if (existingKennel.Logo.Name != imageName || existingKennel.Logo.ImagePath != $"https://{bucketName}.s3.amazonaws.com/{imageName}")
+                                {
+                                    _context.ImagesMetaData.Remove(existingKennel.Logo);
+                                    existingKennel.Logo = new ImagesMetaData
+                                    {
+                                        Name = imageName,
+                                        ImagePath = $"https://{bucketName}.s3.amazonaws.com/{imageName}",
+                                        UploadDate = DateTime.Now
+                                    };
+                                }
+                            }
+                            else
+                            {
+                                existingKennel.Logo = new ImagesMetaData
+                                {
+                                    Name = imageName,
+                                    ImagePath = $"https://{bucketName}.s3.amazonaws.com/{imageName}",
+                                    UploadDate = DateTime.Now
+                                };
+                            }
+                            _context.ImagesMetaData.Update(existingKennel.Logo);
+                        }
+                    }
+                    _context.Update(existingKennel);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!KennelExists(kennel.ID))
+                    if (!KennelExists(vm.Kennel.ID))
                     {
                         return NotFound();
                     }
@@ -151,8 +234,10 @@ namespace CCP.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CountryID"] = new SelectList(_context.Country, "ID", "ID", kennel.CountryID);
-            return View(kennel);
+                
+            
+            ViewData["CountryID"] = new SelectList(_context.Country, "ID", "Name", vm.Kennel.CountryID);
+            return View(vm);
         }
 
         // GET: Kennels/Delete/5

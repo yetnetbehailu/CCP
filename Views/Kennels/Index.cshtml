@@ -3,11 +3,32 @@
 @{
     ViewData["Title"] = "Index";
 }
+@using Microsoft.AspNetCore.Identity
+@using CCP.Areas.Identity.Data
+
+@inject SignInManager<CCPUser> SignInManager
+@inject UserManager<CCPUser> UserManager
 
 <h1>Index</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    @if (SignInManager.IsSignedIn(User))
+    {
+        var user = await UserManager.GetUserAsync(User);
+        var userId = await UserManager.GetUserIdAsync(user);
+        if(user.Kennel != null)
+        {
+            <a asp-action="Details" asp-route-id="@user.Kennel.ID"> Your kennel </a>
+        }
+        else
+        {
+            <a asp-action="Create">Create New</a>
+        }
+    }
+    else
+    {
+        <a class="nav-link text-dark" id="login" asp-area="Identity" asp-page="/Account/Login">Login</a>
+    }
 </p>
 <table class="table">
     <thead>
@@ -64,12 +85,30 @@
                 @Html.DisplayFor(modelItem => item.About)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Country.ID)
+                @Html.DisplayFor(modelItem => item.Country.Name)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.ID">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.ID">Delete</a>
+                    
+                    @if (SignInManager.IsSignedIn(User))
+                    {
+                        var user = await UserManager.GetUserAsync(User);
+                        var userId = await UserManager.GetUserIdAsync(user);
+                        if(user.Kennel == item)
+                        {
+                            <a asp-action="Edit" asp-route-id="@item.ID">Edit</a>
+                            <span>|</span>
+                            <a asp-action="Delete" asp-route-id="@item.ID">Delete</a>
+                            <span>|</span>
+                            <a asp-action="Details" asp-route-id="@item.ID" > Details </a> 
+                        }else
+                        {
+                            <a asp-action="Details" asp-route-id="@item.ID"> Details </a>
+                        }
+                    }
+                    else if(!SignInManager.IsSignedIn(User))
+                    {
+                        <a asp-action="Details" asp-route-id="@item.ID"> Details </a>
+                    }
             </td>
         </tr>
 }
