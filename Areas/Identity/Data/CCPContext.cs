@@ -350,6 +350,8 @@ public class CCPContext : IdentityDbContext<CCPUser>
             UserID = "user1",
             CountryID = 1,
             Name = "John Smith",
+            Address = "Breeder Address 1",
+            Phone = "123-456-1234"
         },
         new Breeder
         {
@@ -357,6 +359,8 @@ public class CCPContext : IdentityDbContext<CCPUser>
             UserID = "user2",
             CountryID = 2,
             Name = "Alice Johnson",
+            Address = "Breeder Address 2",
+            Phone = "123-456-1235"
         },
         new Breeder
         {
@@ -364,6 +368,8 @@ public class CCPContext : IdentityDbContext<CCPUser>
             UserID = "user3",
             CountryID = 3,
             Name = "David Brown",
+            Address = null,
+            Phone = null
         });
 
         //Seed data for Kennel entity
