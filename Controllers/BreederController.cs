@@ -92,6 +92,7 @@ namespace CCP.Controllers
         // POST: Breeder/Edit/id
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> Edit(int id, Breeder breeder) // Breeder UserId is null here
         {
             if (id == breeder.ID)
@@ -110,6 +111,42 @@ namespace CCP.Controllers
             {
                 return NotFound();
             }
+        }
+
+        // Get: Breeder/Delete/id
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var breeder = await _context.Breeder.Include(b => b.Country).Include(b => b.User)
+                .FirstOrDefaultAsync(b => b.ID == id);
+
+            if (breeder == null)
+            {
+                return NotFound();
+            }
+
+            return View(breeder);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var breeder = await _context.Breeder.FindAsync(id);
+            if (breeder == null)
+            {
+                return NotFound();
+            }
+
+            _context.Breeder.Remove(breeder); // Deletes the specific Breeder entity by id
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
         }
     }
 }
