@@ -17,16 +17,35 @@ namespace CCP.Controllers
             _context = context;
         }
 
+        // Get the currently logged-in user's ID
+        private string CurrentUserId => User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        private bool UserIsBreeder => _context.Users.Include(b => b.Breeder).Any(u => u.Id == CurrentUserId && u.Breeder != null);
+
         // GET: Breeder
         public async Task<IActionResult> Index()
         {
             var cCPContext = _context.Breeder.Include(b => b.Country).Include(b => b.User);
+
+            var userBreeder = _context.Breeder.FirstOrDefault(b => b.UserID == CurrentUserId);
+            int? userBreederId = userBreeder?.ID;
+
+            ViewData["UserIsBreeder"] = UserIsBreeder;
+            ViewData["UserBreederId"] = userBreederId;
+
             return View(await cCPContext.ToListAsync());
         }
 
         // GET: Breeder/Create
+        [Authorize]
         public IActionResult Create()
         {
+            var userExist = _context.Users.Include(b => b.Breeder).FirstOrDefault(u => u.Id == CurrentUserId);
+            if (userExist != null && userExist.Breeder != null)
+            {
+                return RedirectToAction("Details", new { id = userExist.Breeder.ID });
+            }
+
             var countries = _context.Country.ToList();
             ViewData["CountryList"] = new SelectList(countries, "ID", "Name");
             return View();
@@ -40,27 +59,23 @@ namespace CCP.Controllers
             var countries = _context.Country.ToList();
             ViewData["CountryList"] = new SelectList(countries, "ID", "Name");
 
-            // Get the currently logged-in user's ID
-            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
             // Find the user in the database
-            var userExist = _context.Users.Include(b => b.Breeder).FirstOrDefault(u => u.Id == currentUserId);
+            var userExist = _context.Users.Include(b => b.Breeder).FirstOrDefault(u => u.Id == CurrentUserId);
 
             if (userExist != null)
             {
-                if (userExist.Breeder == null) // If the user exists, then check if their Breeder navigation property is null. If it is null, that means they don't have a Breeder associated with them, enable to create one
+                if (userExist.Breeder == null)
                 {
                     // Associate the logged-in user with the new Breeder
-                    breeder.UserID = currentUserId;
+                    breeder.UserID = CurrentUserId;
 
                     _context.Breeder.Add(breeder);
                     _context.SaveChanges();
+                    return RedirectToAction(nameof(Index));
                 }
-
-                // Add validation return the view with validation errors
             }
 
-            return RedirectToAction(nameof(Index));
+            return View(breeder); ;
         }
 
         // GET: Breeder/Edit/id
@@ -77,9 +92,7 @@ namespace CCP.Controllers
                 return NotFound();
             }
 
-            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            if (breeder.UserID != currentUserId)
+            if (breeder.UserID != CurrentUserId)
             {
                 return Forbid(); // Return a forbidden response
             }
@@ -97,10 +110,9 @@ namespace CCP.Controllers
         {
             if (id == breeder.ID)
             {
-                var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
                 // Set the breeder UserID to the current user's ID since userId wasn't captured during the edit form post
-                breeder.UserID = currentUserId;
-                _context.Update(breeder); // Updates the breeder object
+                breeder.UserID = CurrentUserId;
+                _context.Update(breeder);
                 await _context.SaveChangesAsync();
 
                 var countries = _context.Country.ToList();
@@ -129,6 +141,11 @@ namespace CCP.Controllers
                 return NotFound();
             }
 
+            if (breeder.UserID != CurrentUserId)
+            {
+                return Forbid();
+            }
+
             return View(breeder);
         }
 
@@ -143,7 +160,7 @@ namespace CCP.Controllers
                 return NotFound();
             }
 
-            _context.Breeder.Remove(breeder); // Deletes the specific Breeder entity by id
+            _context.Breeder.Remove(breeder);
             await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));

@@ -1,4 +1,5 @@
 @model CCP.Models.BreederModels.Breeder
+@using System.Security.Claims
 
 @{
     ViewData["Title"] = "Details";
@@ -37,6 +38,9 @@
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.ID">Edit</a> |
+    @if (User.Identity.IsAuthenticated && Model.UserID == User.FindFirstValue(ClaimTypes.NameIdentifier))
+    {
+        <a asp-action="Edit" asp-route-id="@Model?.ID">Edit</a>
+    }
     <a asp-action="Index">Back to List</a>
 </div>
