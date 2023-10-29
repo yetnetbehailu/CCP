@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using CCP.Data;
@@ -15,8 +11,10 @@ using CCP.Models;
 using Amazon.S3.Model;
 using Microsoft.AspNetCore.Identity;
 using CCP.Areas.Identity.Data;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Data.SqlClient;
+using Microsoft.AspNetCore.Authorization;
+using CCP.Models.DogModels;
+using Newtonsoft.Json;
 
 namespace CCP.Controllers
 {
@@ -55,6 +53,9 @@ namespace CCP.Controllers
                 .Include(k => k.Logo)
                 .Include(k => k.User)
                 .FirstOrDefaultAsync(m => m.ID == id);
+            List<Dog> dogs = await _context.Dog.Where(d => d.KennelID == kennel.UserId).ToListAsync();
+            
+            ViewData["KennelDogs"] = dogs;
             if (kennel == null)
             {
                 return NotFound();
@@ -80,7 +81,7 @@ namespace CCP.Controllers
             ViewData["CountryID"] = new SelectList(_context.Country, "ID", "Name");
             return View();
         }
-        
+        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(KennelLogoVM vm)
@@ -149,8 +150,20 @@ namespace CCP.Controllers
         }
 
         // GET: Kennels/Edit/5
+        [Authorize]
         public async Task<IActionResult> Edit(int? id)
         {
+            var user = await _context.User.Include(u => u.Kennel).FirstOrDefaultAsync(u => u.Kennel.ID == id);
+            if(user == null)
+            {
+                return RedirectToAction("Login", "Account");
+
+            }
+            if (user.Kennel == null)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+           
             if (id == null || _context.Kennel == null)
             {
                 return NotFound();
@@ -169,7 +182,7 @@ namespace CCP.Controllers
             return View(vm);
         }
 
-        
+        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, KennelLogoVM vm)
@@ -183,6 +196,9 @@ namespace CCP.Controllers
             {
                 try
                 {
+                    var user = await _context.User.Include(u => u.Kennel).FirstOrDefaultAsync(u => u.Kennel.ID == id);
+                    //get kennel before changes for comparison
+                    var originalKennelBeforeChanges = _context.Kennel.AsNoTracking().FirstOrDefault(k => k.ID == id);
                     // Handle kennel details update
                     var existingKennel = await _context.Kennel.Include(k => k.Logo).FirstOrDefaultAsync(k => k.ID == id);
 
@@ -240,6 +256,24 @@ namespace CCP.Controllers
                             _context.ImagesMetaData.Update(existingKennel.Logo);
                         }
                     }
+                    if(existingKennel != originalKennelBeforeChanges)
+                    {
+                        var settings = new JsonSerializerSettings
+                        {
+                            ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+                        };
+                        ChangeLog changeLog = new ChangeLog
+                        {
+                            User = user,
+                            ChangeTime = DateTime.Now,
+                            ChangeType = "Edit",
+                            ModelName = "Kennel",
+                            OldValues = JsonConvert.SerializeObject(originalKennelBeforeChanges, settings),
+                            NewValues = JsonConvert.SerializeObject(existingKennel, settings)
+                        };
+                        _context.ChangeLogs.Add(changeLog);
+                    }
+                    
                     _context.Update(existingKennel);
                     await _context.SaveChangesAsync();
                 }
@@ -263,8 +297,19 @@ namespace CCP.Controllers
         }
 
         // GET: Kennels/Delete/5
+        [Authorize]
         public async Task<IActionResult> Delete(int? id)
         {
+            var user = await _context.User.Include(u => u.Kennel).FirstOrDefaultAsync(u => u.Kennel.ID == id);
+            if (user == null)
+            {
+                return RedirectToAction("Login", "Account");
+
+            }
+            if (user.Kennel == null)
+            {
+                return RedirectToAction(nameof(Index));
+            }
             if (id == null || _context.Kennel == null)
             {
                 return NotFound();
@@ -283,6 +328,7 @@ namespace CCP.Controllers
         }
 
         // POST: Kennels/Delete/5
+        [Authorize]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

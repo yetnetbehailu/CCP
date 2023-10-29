@@ -23,6 +23,7 @@ public class CCPContext : IdentityDbContext<CCPUser>
     public DbSet<Pedigree> pedigree { get; set; }
     public DbSet<ChampionshipTitle> ChampionshipTitle { get; set; }
     public DbSet<ImagesMetaData> ImagesMetaData { get; set; }
+    public DbSet<ChangeLog> ChangeLogs { get; set; }
     public CCPContext(DbContextOptions<CCPContext> options)
         : base(options)
     {
