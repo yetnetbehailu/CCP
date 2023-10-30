@@ -2,9 +2,11 @@
 
 @{
     ViewData["Title"] = "Details";
+    var kennelDogs = ViewBag.KennelDogs as List<Dog>;
 }
 @using Microsoft.AspNetCore.Identity
 @using CCP.Areas.Identity.Data
+@using CCP.Models.DogModels
 
 @inject SignInManager<CCPUser> SignInManager
 @inject UserManager<CCPUser> UserManager
@@ -68,6 +70,26 @@
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.Country.Name)
         </dd>
+        <dt class = "col-sm-2">
+            Dogs
+        </dt>
+        <dd class = "col-sm-10">
+            <ul>
+                @if (kennelDogs != null)
+                {
+                    @foreach (var dog in kennelDogs)
+                    {
+                        <li>@dog.RegName</li>
+                    }
+                }
+                else
+                {
+                    <li>No dogs in this kennel</li>
+                }
+
+            </ul>
+        </dd>
+       
     </dl>
 </div>
 <div>
