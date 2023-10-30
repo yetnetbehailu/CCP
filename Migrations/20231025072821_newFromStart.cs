@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace CCP.Migrations
 {
     /// <inheritdoc />
-    public partial class ok : Migration
+    public partial class newFromStart : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -234,7 +234,9 @@ namespace CCP.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserID = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     CountryID = table.Column<int>(type: "int", nullable: true),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Address = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Phone = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -260,14 +262,14 @@ namespace CCP.Migrations
                     ID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     CountryID = table.Column<int>(type: "int", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     OwnerName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     WebsiteURL = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Address = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Phone = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Mobile = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     About = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -276,7 +278,8 @@ namespace CCP.Migrations
                         name: "FK_Kennel_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Kennel_Country_CountryID",
                         column: x => x.CountryID,
@@ -341,6 +344,40 @@ namespace CCP.Migrations
                         principalColumn: "ID");
                 });
 
+            migrationBuilder.CreateTable(
+                name: "ImagesMetaData",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ImagePath = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    UploadDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    KennelId = table.Column<int>(type: "int", nullable: false),
+                    DogID = table.Column<int>(type: "int", nullable: true),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ImagesMetaData", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ImagesMetaData_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_ImagesMetaData_Dog_DogID",
+                        column: x => x.DogID,
+                        principalTable: "Dog",
+                        principalColumn: "ID");
+                    table.ForeignKey(
+                        name: "FK_ImagesMetaData_Kennel_KennelId",
+                        column: x => x.KennelId,
+                        principalTable: "Kennel",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
@@ -401,12 +438,12 @@ namespace CCP.Migrations
 
             migrationBuilder.InsertData(
                 table: "Breeder",
-                columns: new[] { "ID", "CountryID", "Name", "UserID" },
+                columns: new[] { "ID", "Address", "CountryID", "Name", "Phone", "UserID" },
                 values: new object[,]
                 {
-                    { 1, 1, "John Smith", "user1" },
-                    { 2, 2, "Alice Johnson", "user2" },
-                    { 3, 3, "David Brown", "user3" }
+                    { 1, "Breeder Address 1", 1, "John Smith", "123-456-1234", "user1" },
+                    { 2, "Breeder Address 2", 2, "Alice Johnson", "123-456-1235", "user2" },
+                    { 3, null, 3, "David Brown", null, "user3" }
                 });
 
             migrationBuilder.InsertData(
@@ -416,7 +453,7 @@ namespace CCP.Migrations
                 {
                     { 1, "user2", 0, "Brown", new DateTime(2019, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 0, 24.5m, null, "user2", "Pet1", "Dog1", "RegNo1", 55.2m, new DateTime(2021, 5, 10, 0, 0, 0, 0, DateTimeKind.Unspecified) },
                     { 2, null, 1, "White", new DateTime(2019, 9, 3, 0, 0, 0, 0, DateTimeKind.Unspecified), 1, 18.3m, "user1", "user1", "Buddy", "Dog2", "D67890", 42.7m, null },
-                    { 3, "user3", 1, "Red", new DateTime(2014, 9, 7, 0, 0, 0, 0, DateTimeKind.Unspecified), 1, 18.3m, "user3", "user3", "Kiki", "Dog3", "D67893", 42.7m, null }
+                    { 3, "user3", 1, "Red", new DateTime(2014, 9, 7, 0, 0, 0, 0, DateTimeKind.Unspecified), 1, 18.3m, "user2", "user3", "Kiki", "Dog3", "D67893", 42.7m, null }
                 });
 
             migrationBuilder.InsertData(
@@ -424,8 +461,8 @@ namespace CCP.Migrations
                 columns: new[] { "ID", "About", "Address", "CountryID", "Mobile", "Name", "OwnerName", "Phone", "UserId", "WebsiteURL" },
                 values: new object[,]
                 {
-                    { 1, "Kennel Description 1", "Kennel Address 1", 1, "987-654-3210", "Kennel1", "Owner1", "123-456-7890", null, "https://www.kennel1.com" },
-                    { 2, "Kennel Description 2", "Kennel Address 2", 2, "876-543-2109", "Kennel2", "Owner2", "234-567-8901", null, "https://www.kennel2.com" }
+                    { 1, "Kennel Description 1", "Kennel Address 1", 1, "987-654-3210", "Kennel1", "Owner1", "123-456-7890", "User1", "https://www.kennel1.com" },
+                    { 2, "Kennel Description 2", "Kennel Address 2", 2, "876-543-2109", "Kennel2", "Owner2", "234-567-8901", "User2", "https://www.kennel2.com" }
                 });
 
             migrationBuilder.InsertData(
@@ -522,14 +559,37 @@ namespace CCP.Migrations
                 column: "OwnerID");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ImagesMetaData_DogID",
+                table: "ImagesMetaData",
+                column: "DogID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ImagesMetaData_KennelId",
+                table: "ImagesMetaData",
+                column: "KennelId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ImagesMetaData_UserId",
+                table: "ImagesMetaData",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Kennel_CountryID",
                 table: "Kennel",
                 column: "CountryID");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Kennel_Name",
+                table: "Kennel",
+                column: "Name",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Kennel_UserId",
                 table: "Kennel",
-                column: "UserId");
+                column: "UserId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_pedigree_DamID",
@@ -572,7 +632,7 @@ namespace CCP.Migrations
                 name: "ChampionshipTitle");
 
             migrationBuilder.DropTable(
-                name: "Kennel");
+                name: "ImagesMetaData");
 
             migrationBuilder.DropTable(
                 name: "pedigree");
@@ -584,10 +644,13 @@ namespace CCP.Migrations
                 name: "OfficialTitle");
 
             migrationBuilder.DropTable(
-                name: "Country");
+                name: "Kennel");
 
             migrationBuilder.DropTable(
                 name: "Dog");
+
+            migrationBuilder.DropTable(
+                name: "Country");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");

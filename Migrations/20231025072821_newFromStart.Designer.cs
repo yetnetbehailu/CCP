@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CCP.Migrations
 {
     [DbContext(typeof(CCPContext))]
-    [Migration("20231016105440_addImagesMetaData")]
-    partial class addImagesMetaData
+    [Migration("20231025072821_newFromStart")]
+    partial class newFromStart
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -260,11 +260,17 @@ namespace CCP.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
+                    b.Property<string>("Address")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int?>("CountryID")
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
                         .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Phone")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserID")
@@ -284,15 +290,19 @@ namespace CCP.Migrations
                         new
                         {
                             ID = 1,
+                            Address = "Breeder Address 1",
                             CountryID = 1,
                             Name = "John Smith",
+                            Phone = "123-456-1234",
                             UserID = "user1"
                         },
                         new
                         {
                             ID = 2,
+                            Address = "Breeder Address 2",
                             CountryID = 2,
                             Name = "Alice Johnson",
+                            Phone = "123-456-1235",
                             UserID = "user2"
                         },
                         new
@@ -583,7 +593,7 @@ namespace CCP.Migrations
                             DOB = new DateTime(2014, 9, 7, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Gender = 1,
                             Height = 18.3m,
-                            KennelID = "user3",
+                            KennelID = "user2",
                             OwnerID = "user3",
                             PetName = "Kiki",
                             RegName = "Dog3",
@@ -764,7 +774,7 @@ namespace CCP.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("OwnerName")
                         .IsRequired()
@@ -775,6 +785,7 @@ namespace CCP.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("WebsiteURL")
@@ -785,7 +796,11 @@ namespace CCP.Migrations
 
                     b.HasIndex("CountryID");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
 
                     b.ToTable("Kennel");
 
@@ -800,6 +815,7 @@ namespace CCP.Migrations
                             Name = "Kennel1",
                             OwnerName = "Owner1",
                             Phone = "123-456-7890",
+                            UserId = "User1",
                             WebsiteURL = "https://www.kennel1.com"
                         },
                         new
@@ -812,6 +828,7 @@ namespace CCP.Migrations
                             Name = "Kennel2",
                             OwnerName = "Owner2",
                             Phone = "234-567-8901",
+                            UserId = "User2",
                             WebsiteURL = "https://www.kennel2.com"
                         });
                 });
@@ -1042,7 +1059,7 @@ namespace CCP.Migrations
             modelBuilder.Entity("CCP.Models.ImagesMetaData", b =>
                 {
                     b.HasOne("CCP.Models.DogModels.Dog", "Dog")
-                        .WithMany()
+                        .WithMany("Images")
                         .HasForeignKey("DogID");
 
                     b.HasOne("CCP.Models.KennelModels.Kennel", "Kennel")
@@ -1071,8 +1088,10 @@ namespace CCP.Migrations
                         .IsRequired();
 
                     b.HasOne("CCP.Areas.Identity.Data.CCPUser", "User")
-                        .WithMany("Kennel")
-                        .HasForeignKey("UserId");
+                        .WithOne("Kennel")
+                        .HasForeignKey("CCP.Models.KennelModels.Kennel", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Country");
 
@@ -1141,7 +1160,8 @@ namespace CCP.Migrations
 
                     b.Navigation("DogOwner");
 
-                    b.Navigation("Kennel");
+                    b.Navigation("Kennel")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("CCP.Models.DogModels.Dog", b =>
@@ -1149,6 +1169,8 @@ namespace CCP.Migrations
                     b.Navigation("ChampionshipTitles");
 
                     b.Navigation("DamPedigree");
+
+                    b.Navigation("Images");
 
                     b.Navigation("LitterPedigree");
 
@@ -1162,8 +1184,7 @@ namespace CCP.Migrations
 
             modelBuilder.Entity("CCP.Models.KennelModels.Kennel", b =>
                 {
-                    b.Navigation("Logo")
-                        .IsRequired();
+                    b.Navigation("Logo");
                 });
 #pragma warning restore 612, 618
         }
