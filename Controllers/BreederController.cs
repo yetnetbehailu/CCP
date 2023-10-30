@@ -5,6 +5,7 @@ using CCP.Data;
 using CCP.Models.BreederModels;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
+using CCP.ViewModels;
 
 namespace CCP.Controllers
 {
@@ -182,7 +183,15 @@ namespace CCP.Controllers
                 return NotFound();
             }
 
-            return View(breeder);
+            var dogs = await _context.Dog.Where(d => d.BreederID == breeder.UserID).ToListAsync();
+
+            var viewModel = new BreederDetailsViewModel
+            {
+                Breeder = breeder,
+                Dogs = dogs
+            };
+
+            return View(viewModel);
         }
 
     }
