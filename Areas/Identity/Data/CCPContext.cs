@@ -530,7 +530,7 @@ public class CCPContext : IdentityDbContext<CCPUser>
             Weight = 42.7m,
             OwnerID = "user3",
             BreederID = "user3",
-            KennelID = "user3",
+            KennelID = "user2",
         });
     }
 }
