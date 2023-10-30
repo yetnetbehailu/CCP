@@ -21,7 +21,7 @@ namespace CCP.Models.DogModels
         public decimal? Weight { get; set; }
 
 
-
+        public ICollection<ImagesMetaData>? Images { get; set; }
         public ICollection<ChampionshipTitle> ChampionshipTitles { get; set; }
         public ICollection<Pedigree> SirePedigree { get; set; }
         public ICollection<Pedigree> DamPedigree { get; set; }

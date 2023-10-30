@@ -4,6 +4,7 @@ using CCP.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CCP.Migrations
 {
     [DbContext(typeof(CCPContext))]
-    partial class CCPContextModelSnapshot : ModelSnapshot
+    [Migration("20231029113103_addChangeLog")]
+    partial class addChangeLog
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -281,7 +284,7 @@ namespace CCP.Migrations
                     b.HasIndex("UserID")
                         .IsUnique();
 
-                    b.ToTable("Breeder", (string)null);
+                    b.ToTable("Breeder");
 
                     b.HasData(
                         new
@@ -366,7 +369,7 @@ namespace CCP.Migrations
 
                     b.HasKey("ID");
 
-                    b.ToTable("Country", (string)null);
+                    b.ToTable("Country");
 
                     b.HasData(
                         new
@@ -511,7 +514,7 @@ namespace CCP.Migrations
 
                     b.HasIndex("OfficialTitleID");
 
-                    b.ToTable("ChampionshipTitle", (string)null);
+                    b.ToTable("ChampionshipTitle");
 
                     b.HasData(
                         new
@@ -584,7 +587,7 @@ namespace CCP.Migrations
 
                     b.HasIndex("OwnerID");
 
-                    b.ToTable("Dog", (string)null);
+                    b.ToTable("Dog");
 
                     b.HasData(
                         new
@@ -654,7 +657,7 @@ namespace CCP.Migrations
 
                     b.HasKey("ID");
 
-                    b.ToTable("OfficialTitle", (string)null);
+                    b.ToTable("OfficialTitle");
 
                     b.HasData(
                         new
@@ -726,7 +729,7 @@ namespace CCP.Migrations
 
                     b.HasIndex("SireID");
 
-                    b.ToTable("pedigree", (string)null);
+                    b.ToTable("pedigree");
 
                     b.HasData(
                         new
@@ -780,7 +783,7 @@ namespace CCP.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("ImagesMetaData", (string)null);
+                    b.ToTable("ImagesMetaData");
                 });
 
             modelBuilder.Entity("CCP.Models.KennelModels.Kennel", b =>
@@ -836,7 +839,7 @@ namespace CCP.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("Kennel", (string)null);
+                    b.ToTable("Kennel");
 
                     b.HasData(
                         new

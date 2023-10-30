@@ -4,6 +4,7 @@ using CCP.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CCP.Migrations
 {
     [DbContext(typeof(CCPContext))]
-    partial class CCPContextModelSnapshot : ModelSnapshot
+    [Migration("20231025071140_addimagestodogmodel")]
+    partial class addimagestodogmodel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -281,7 +284,7 @@ namespace CCP.Migrations
                     b.HasIndex("UserID")
                         .IsUnique();
 
-                    b.ToTable("Breeder", (string)null);
+                    b.ToTable("Breeder");
 
                     b.HasData(
                         new
@@ -311,43 +314,6 @@ namespace CCP.Migrations
                         });
                 });
 
-            modelBuilder.Entity("CCP.Models.ChangeLog", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("ChangeTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("ChangeType")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ModelName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("NewValues")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("OldValues")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("ChangeLogs");
-                });
-
             modelBuilder.Entity("CCP.Models.Country", b =>
                 {
                     b.Property<int>("ID")
@@ -366,7 +332,7 @@ namespace CCP.Migrations
 
                     b.HasKey("ID");
 
-                    b.ToTable("Country", (string)null);
+                    b.ToTable("Country");
 
                     b.HasData(
                         new
@@ -511,7 +477,7 @@ namespace CCP.Migrations
 
                     b.HasIndex("OfficialTitleID");
 
-                    b.ToTable("ChampionshipTitle", (string)null);
+                    b.ToTable("ChampionshipTitle");
 
                     b.HasData(
                         new
@@ -584,7 +550,7 @@ namespace CCP.Migrations
 
                     b.HasIndex("OwnerID");
 
-                    b.ToTable("Dog", (string)null);
+                    b.ToTable("Dog");
 
                     b.HasData(
                         new
@@ -654,7 +620,7 @@ namespace CCP.Migrations
 
                     b.HasKey("ID");
 
-                    b.ToTable("OfficialTitle", (string)null);
+                    b.ToTable("OfficialTitle");
 
                     b.HasData(
                         new
@@ -726,7 +692,7 @@ namespace CCP.Migrations
 
                     b.HasIndex("SireID");
 
-                    b.ToTable("pedigree", (string)null);
+                    b.ToTable("pedigree");
 
                     b.HasData(
                         new
@@ -780,7 +746,7 @@ namespace CCP.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("ImagesMetaData", (string)null);
+                    b.ToTable("ImagesMetaData");
                 });
 
             modelBuilder.Entity("CCP.Models.KennelModels.Kennel", b =>
@@ -836,7 +802,7 @@ namespace CCP.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("Kennel", (string)null);
+                    b.ToTable("Kennel");
 
                     b.HasData(
                         new
@@ -1018,17 +984,6 @@ namespace CCP.Migrations
                         .IsRequired();
 
                     b.Navigation("Country");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("CCP.Models.ChangeLog", b =>
-                {
-                    b.HasOne("CCP.Areas.Identity.Data.CCPUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
 
                     b.Navigation("User");
                 });
