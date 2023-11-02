@@ -16,6 +16,9 @@
                 @Html.DisplayNameFor(model => model[0].Dog.RegName)
             </th>
             <th>
+                @Html.DisplayNameFor(model => model[0].Dog.Gender)
+            </th>
+            <th>
                 @Html.DisplayNameFor(model => model[0].Dog.RegNo)
             </th>
             <th>
@@ -25,13 +28,7 @@
                 @Html.DisplayNameFor(model => model[0].Dog.DOB)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model[0].Dog.YearOfDeath)
-            </th>
-            <th>
                 @Html.DisplayNameFor(model => model[0].Dog.Coat)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model[0].Dog.Gender)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model[0].Dog.Color)
@@ -41,6 +38,9 @@
             </th>
             <th>
                 @Html.DisplayNameFor(model => model[0].Dog.Weight)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model[0].Dog.YearOfDeath)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model[0].Dog.Owner)
@@ -61,45 +61,45 @@
                 @Html.DisplayFor(modelItem => item.Dog.RegName)
             </td>
             <td>
-                    @Html.DisplayFor(modelItem => item.Dog.RegNo)
+                @Html.DisplayFor(modelItem => item.Dog.Gender)
             </td>
             <td>
-                    @Html.DisplayFor(modelItem => item.Dog.PetName)
+                @Html.DisplayFor(modelItem => item.Dog.RegNo)
             </td>
             <td>
-                    @Html.DisplayFor(modelItem => item.Dog.DOB)
+                @Html.DisplayFor(modelItem => item.Dog.PetName)
             </td>
             <td>
-                    @Html.DisplayFor(modelItem => item.Dog.YearOfDeath)
+                @Html.DisplayFor(modelItem => item.Dog.DOB)
             </td>
             <td>
-                    @Html.DisplayFor(modelItem => item.Dog.Coat)
+                @Html.DisplayFor(modelItem => item.Dog.Coat)
             </td>
             <td>
-                    @Html.DisplayFor(modelItem => item.Dog.Gender)
+                @Html.DisplayFor(modelItem => item.Dog.Color)
             </td>
             <td>
-                    @Html.DisplayFor(modelItem => item.Dog.Color)
+                @Html.DisplayFor(modelItem => item.Dog.Height)
             </td>
             <td>
-                    @Html.DisplayFor(modelItem => item.Dog.Height)
+                @Html.DisplayFor(modelItem => item.Dog.Weight)
             </td>
             <td>
-                    @Html.DisplayFor(modelItem => item.Dog.Weight)
+                @Html.DisplayFor(modelItem => item.Dog.YearOfDeath)
             </td>
             <td>
-                    @Html.DisplayFor(modelItem => item.Dog.Owner.Id)
+                @Html.DisplayFor(modelItem => item.Dog.Owner.Id)
             </td>
             <td>
-                    @Html.DisplayFor(modelItem => item.Breeder.UserID)
+                @Html.DisplayFor(modelItem => item.Breeder.UserID)
             </td>
             <td>
-                    @Html.DisplayFor(modelItem => item.Kennel.UserId)
+                @Html.DisplayFor(modelItem => item.Kennel.UserId)
             </td>
             <td>
-                    <a asp-action="Edit" asp-route-id="@item.Dog.ID">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.Dog.ID">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.Dog.ID">Delete</a>
+                <a asp-action="Edit" asp-route-id="@item.Dog.ID">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.Dog.ID">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.Dog.ID">Delete</a>
             </td>
         </tr>
 }
