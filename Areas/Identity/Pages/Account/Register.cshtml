@@ -1,4 +1,4 @@
-﻿@page
+﻿@page "/Account/Register"
 @model RegisterModel
 @{
     ViewData["Title"] = "Register";
@@ -13,7 +13,12 @@
             <hr />
             <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
             <div class="form-floating mb-3">
-                <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
+                <input asp-for="Input.UserName" id="UserName" class="form-control" autocomplete="username" aria-required="true" placeholder="Username" />
+                <label asp-for="Input.UserName">Username</label>
+                <span asp-validation-for="Input.UserName" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Input.Email" class="form-control"  aria-required="true" placeholder="name@example.com" />
                 <label asp-for="Input.Email">Email</label>
                 <span asp-validation-for="Input.Email" class="text-danger"></span>
             </div>
@@ -39,8 +44,10 @@
                 {
                     <div>
                         <p>
-                            There are no external authentication services configured. See this <a href="https://go.microsoft.com/fwlink/?LinkID=532715">article
-                            about setting up this ASP.NET application to support logging in via external services</a>.
+                            There are no external authentication services configured. See this <a href="https://go.microsoft.com/fwlink/?LinkID=532715">
+                                article
+                                about setting up this ASP.NET application to support logging in via external services
+                            </a>.
                         </p>
                     </div>
                 }
@@ -64,4 +71,31 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>// Attach an event listener to the "Input.UserName" input field
+        $("#UserName").on("input", function () {
+            var username = $(this).val();
+            console.log('Generated URL: ' + '@Url.Page("/Account/Register", "IsUsernameInUse")');
+            
+            // Make an AJAX request to check username availability
+            $.ajax({
+                type: "GET", // Use the HTTP GET method
+                url: "/Account/Register/IsUsernameInUse",// The URL for the IsUsernameInUse action
+                data: { UserName: username }, // Send the username as a parameter
+                success: function (result) {
+                    if (result) {
+                        console.log(username);
+                        console.log(result);
+                        // Add is-invalid class to indicate an error
+                        $("#UserName").addClass("is-invalid");
+
+                        // Set aria-invalid to true
+                        $("#UserName").attr("aria-invalid", "true");
+                    } else {
+                        $("#UserName").removeClass("is-invalid");
+
+                        $("#UserName").attr("aria-invalid", "false");
+                    }
+                }
+            });
+        });</script>
 }

@@ -65,12 +65,39 @@ namespace CCP.Areas.Identity.Pages.Account
         /// </summary>
         public IList<AuthenticationScheme> ExternalLogins { get; set; }
 
+
+        [AllowAnonymous] // Action can be accessed without authentication
+        [AcceptVerbs("Get", "Post")] // Allow both GET and POST requests
+        public JsonResult OnGetIsUsernameInUse(string UserName)
+        {
+            // Perform a check to see if the provided UserName is already in use
+            bool IsUsernameInUse = UsernameAvailability(UserName);
+
+            // Return a JSON result indicating whether the username is available
+            return new JsonResult(!IsUsernameInUse);
+        }
+
+        private bool UsernameAvailability(string userName)
+        {
+            bool usernameExists = _userManager.Users.Any(u => u.UserName == userName);
+
+            return usernameExists;
+        }
+
+
         /// <summary>
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
         public class InputModel
         {
+            [Required]
+            [StringLength(20, MinimumLength = 2, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.")]
+            [RegularExpression(@"^(?=.*[a-zA-Z])[a-zA-Z0-9_\.]*$", ErrorMessage = "The {0} can only contain letters, numbers, underscores, and periods, and must include at least one letter.")]
+            [Remote("IsUsernameInUse", "Account/Register", AdditionalFields = "Input.UserName", HttpMethod = "Get", ErrorMessage = "The username is already taken.")] // The [Remote] attribute specifies the action method and page to use for remote validation
+            [Display(Name = "Username")]
+            public string UserName { get; set; }
+
             /// <summary>
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
@@ -115,7 +142,7 @@ namespace CCP.Areas.Identity.Pages.Account
             {
                 var user = CreateUser();
 
-                await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
+                await _userStore.SetUserNameAsync(user, Input.UserName, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
                 var result = await _userManager.CreateAsync(user, Input.Password);
 
