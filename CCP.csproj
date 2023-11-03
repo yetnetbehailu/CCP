@@ -28,10 +28,12 @@
     <None Remove="Models\DogModels\" />
     <None Remove="Models\BreederModels\" />
     <None Remove="Models\KennelModels\" />
+    <None Remove="Helpers\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Models\DogModels\" />
     <Folder Include="Models\BreederModels\" />
     <Folder Include="Models\KennelModels\" />
+    <Folder Include="Helpers\" />
   </ItemGroup>
 </Project>
