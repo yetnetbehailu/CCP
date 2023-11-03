@@ -3,16 +3,15 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using CCP.Data;
 using CCP.Models.BreederModels;
-
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using Newtonsoft.Json;
 using CCP.Models;
 using CCP.Areas.Identity.Data;
 
-
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 using CCP.ViewModels;
-
 
 namespace CCP.Controllers
 {
@@ -183,24 +182,7 @@ namespace CCP.Controllers
             return View(breeder);
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        [Authorize]
-        public async Task<IActionResult> Delete(int id)
-        {
-            var breeder = await _context.Breeder.FindAsync(id);
-            if (breeder == null)
-            {
-                return NotFound();
-            }
-
-            _context.Breeder.Remove(breeder);
-            await _context.SaveChangesAsync();
-
-            return RedirectToAction(nameof(Index));
-        }
-
-
+        
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize]
@@ -244,7 +226,6 @@ namespace CCP.Controllers
 
             return View(viewModel);
         }
-
 
     }
 }

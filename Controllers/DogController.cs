@@ -8,12 +8,11 @@ using Microsoft.EntityFrameworkCore;
 using CCP.Data;
 using CCP.Models.DogModels;
 using CCP.ViewModels;
-
+using Amazon.S3.Transfer;
+using Amazon.S3;
 using CCP.Models;
-
-
-using CCP.Helpers;
-
+using Amazon;
+using Amazon.S3.Model;
 
 namespace CCP.Controllers
 {
@@ -124,8 +123,6 @@ namespace CCP.Controllers
             ViewData["BreederID"] = new SelectList(breeder, "UserID", "UserID");
             ViewData["KennelID"] = new SelectList(kennel, "UserId", "UserId");
             ViewData["OwnerID"] = loggedUser;
-            ViewData["Gender"] = EnumHelper.ConvertEnumToRadioList<Genders>();
-            ViewData["Coat"] = EnumHelper.ConvertEnumToRadioList<Coats>();
             return View();
         }
 
@@ -188,8 +185,6 @@ namespace CCP.Controllers
             ViewData["BreederID"] = new SelectList(breeder, "UserID", "UserID", dog.BreederID);
             ViewData["KennelID"] = new SelectList(kennel, "UserId", "UserId", dog.KennelID);
             ViewData["OwnerID"] = new SelectList(_context.User, "Id", "Id", dog.OwnerID);
-            ViewData["Gender"] = EnumHelper.ConvertEnumToRadioList<Genders>();
-            ViewData["Coat"] = EnumHelper.ConvertEnumToRadioList<Coats>();
             return View(dog);
         }
 
