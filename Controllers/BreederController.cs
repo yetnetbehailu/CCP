@@ -9,6 +9,10 @@ using Newtonsoft.Json;
 using CCP.Models;
 using CCP.Areas.Identity.Data;
 
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
+using CCP.ViewModels;
+
 namespace CCP.Controllers
 {
     public class BreederController : Controller
@@ -178,6 +182,7 @@ namespace CCP.Controllers
             return View(breeder);
         }
 
+        
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize]
@@ -211,7 +216,15 @@ namespace CCP.Controllers
                 return NotFound();
             }
 
-            return View(breeder);
+            var dogs = await _context.Dog.Where(d => d.BreederID == breeder.UserID).ToListAsync();
+
+            var viewModel = new BreederDetailsViewModel
+            {
+                Breeder = breeder,
+                Dogs = dogs
+            };
+
+            return View(viewModel);
         }
 
     }
