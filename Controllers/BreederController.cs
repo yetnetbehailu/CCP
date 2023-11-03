@@ -3,9 +3,16 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using CCP.Data;
 using CCP.Models.BreederModels;
+
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
+using Newtonsoft.Json;
+using CCP.Models;
+using CCP.Areas.Identity.Data;
+
+
 using CCP.ViewModels;
+
 
 namespace CCP.Controllers
 {
@@ -108,9 +115,35 @@ namespace CCP.Controllers
         [ValidateAntiForgeryToken]
         [Authorize]
         public async Task<IActionResult> Edit(int id, Breeder breeder) // Breeder UserId is null here
-        {
+         {
             if (id == breeder.ID)
             {
+                CCPUser user = await _context.User.FirstOrDefaultAsync(u => u.Id == CurrentUserId);
+                //Get breeder before changes
+                Breeder originalBreederBeforeChanges = await _context.Breeder.AsNoTracking().FirstOrDefaultAsync(b => b.ID == id);
+                //Compare the two versions
+                bool hasChanged = breeder.Name != originalBreederBeforeChanges.Name ||
+                    breeder.CountryID != originalBreederBeforeChanges.CountryID ||
+                    breeder.Address != originalBreederBeforeChanges.Address ||
+                    breeder.Phone != originalBreederBeforeChanges.Phone;
+                if (hasChanged)
+                {
+                    var settings = new JsonSerializerSettings
+                    {
+                        ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                        PreserveReferencesHandling = PreserveReferencesHandling.Objects,
+                    };
+                    ChangeLog changeLog = new ChangeLog
+                    {
+                        User = user,
+                        ChangeTime = DateTime.UtcNow,
+                        ModelName = breeder.Name,
+                        ChangeType = "Edited breeder",
+                        OldValues = JsonConvert.SerializeObject(originalBreederBeforeChanges, settings),
+                        NewValues = JsonConvert.SerializeObject(breeder, settings)
+                    };
+                    _context.ChangeLogs.Add(changeLog);
+                }
                 // Set the breeder UserID to the current user's ID since userId wasn't captured during the edit form post
                 breeder.UserID = CurrentUserId;
                 _context.Update(breeder);
@@ -167,6 +200,24 @@ namespace CCP.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var breeder = await _context.Breeder.FindAsync(id);
+            if (breeder == null)
+            {
+                return NotFound();
+            }
+
+            _context.Breeder.Remove(breeder);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
+        }
+
         // GET: Breeder/Details/id
         public async Task<IActionResult> Details(int? id)
         {
@@ -193,6 +244,7 @@ namespace CCP.Controllers
 
             return View(viewModel);
         }
+
 
     }
 }

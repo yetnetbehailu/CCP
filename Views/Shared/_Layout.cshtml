@@ -29,9 +29,9 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Kennels" asp-action="Index">Kennel</a>
                         </li>
                         <li class="nav-item">
-
                             <a class="nav-link text-dark" asp-area="" asp-controller="Dog" asp-action="Index">Dog</a>
-
+                        </li>
+                        <li>
                             <a class="nav-link text-dark" asp-area="" asp-controller="ChangeLogs" asp-action="Index">Change log</a>
                         </li>
                         <li class="nav-item">
@@ -48,7 +48,6 @@
             @RenderBody()
         </main>
     </div>
-
     <footer class="border-top footer text-muted">
         <div class="container">
             &copy; 2023 - CCP - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
@@ -58,6 +57,7 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
+    
 </body>
 </html>
 

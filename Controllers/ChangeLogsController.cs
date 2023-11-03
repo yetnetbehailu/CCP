@@ -16,7 +16,7 @@ namespace CCP.Controllers
         }
         public IActionResult Index()
         {
-            var logs = _context.ChangeLogs.ToList();
+            var logs = _context.ChangeLogs.Include(c => c.User).ToList();
             return View(logs);
         }
         public async Task<IActionResult> Details(int id)
@@ -32,7 +32,7 @@ namespace CCP.Controllers
             }
             string? oldVersion = changeLog.OldValues;
             string newVersion = changeLog.NewValues;
-            UtilityClass uti = new UtilityClass();
+            UtilityClass uti = new UtilityClass(_context);
             List<string> diff = uti.GetDifferences(oldVersion, newVersion);
             ViewData["Changes"] = diff;
             return View(changeLog);
