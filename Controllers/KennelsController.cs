@@ -101,27 +101,17 @@ namespace CCP.Controllers
 
                     if (vm.Logo != null)
                     {
-                        string bucketName = "ccpgroupbucket";
-                        var accessKey = _configuration["AwsAccessKey"];
-                        var secretKey = _configuration["AwsSecretKey"];
-                        using (var client = new AmazonS3Client(accessKey, secretKey, RegionEndpoint.EUNorth1))
-                        {
                             var imageName = Guid.NewGuid().ToString() + Path.GetExtension(vm.Logo.FileName);
-                            var fileTransfer = new TransferUtility(client);
-
-                            using (var stream = vm.Logo.OpenReadStream())
+                            var uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "uploads");
+                            Directory.CreateDirectory(uploadsFolder); // Create the directory if it doesn't exist
+                            var imagePath = Path.Combine(uploadsFolder, imageName);
+                            using (var stream = new FileStream(imagePath, FileMode.Create))
                             {
-                                await fileTransfer.UploadAsync(stream, bucketName, imageName);
+                                await vm.Logo.CopyToAsync(stream);
                             }
-                            newKennel.Logo = new ImagesMetaData
-                            {
-                                Name = imageName,
-                                ImagePath = $"https://{bucketName}.s3.amazonaws.com/{imageName}",
-                                UploadDate = DateTime.Now,
-                                Kennel = newKennel
-                            };
-                        }
-                        _context.Add(newKennel.Logo);
+                            ImagesMetaData imagesMetaData = new ImagesMetaData { Name = imageName, ImagePath = imagePath, UploadDate = DateTime.Now, Kennel = vm.Kennel };
+                        
+                        _context.Add(imagesMetaData);
                     }
                     _context.Add(newKennel);
                     await _context.SaveChangesAsync();
@@ -178,7 +168,7 @@ namespace CCP.Controllers
             {
                 Kennel = kennel
             };
-            ViewData["CountryID"] = new SelectList(_context.Country, "ID", "Name", kennel.CountryID);
+            ViewData["CountryID"] = new SelectList(_context.Country.ToList(), "ID", "Name", kennel.CountryID);
             return View(vm);
         }
 
@@ -198,7 +188,8 @@ namespace CCP.Controllers
                 {
                     var user = await _context.User.Include(u => u.Kennel).FirstOrDefaultAsync(u => u.Kennel.ID == id);
                     //get kennel before changes for comparison
-                    var originalKennelBeforeChanges = _context.Kennel.AsNoTracking().FirstOrDefault(k => k.ID == id);
+                    var originalKennelBeforeChanges = _context.Kennel.AsNoTracking().Include(k => k.Logo)
+                        .FirstOrDefault(k => k.ID == id);
                     // Handle kennel details update
                     var existingKennel = await _context.Kennel.Include(k => k.Logo).FirstOrDefaultAsync(k => k.ID == id);
 
@@ -256,24 +247,44 @@ namespace CCP.Controllers
                             _context.ImagesMetaData.Update(existingKennel.Logo);
                         }
                     }
-                    if(existingKennel != originalKennelBeforeChanges)
+                    bool hasChanges = existingKennel.Name != originalKennelBeforeChanges.Name ||
+                                       existingKennel.OwnerName != originalKennelBeforeChanges.OwnerName ||
+                                          existingKennel.CountryID != originalKennelBeforeChanges.CountryID ||
+                                          existingKennel.WebsiteURL != originalKennelBeforeChanges.WebsiteURL ||
+                                          existingKennel.Address != originalKennelBeforeChanges.Address ||
+                                          existingKennel.Phone != originalKennelBeforeChanges.Phone ||
+                                          existingKennel.Mobile != originalKennelBeforeChanges.Mobile ||
+                                          existingKennel.About != originalKennelBeforeChanges.About;
+                    if (existingKennel.Logo != null && originalKennelBeforeChanges.Logo != null)
+                    {
+                        hasChanges = hasChanges ||
+                                     existingKennel.Logo.Name != originalKennelBeforeChanges.Logo.Name ||
+                                     existingKennel.Logo.ImagePath != originalKennelBeforeChanges.Logo.ImagePath;
+                    }
+                    else if ((existingKennel.Logo == null) != (originalKennelBeforeChanges.Logo == null))
+                    {
+                        // If one is null and the other isn't, then there's a change
+                        hasChanges = true;
+                    }
+
+                    if (hasChanges)
                     {
                         var settings = new JsonSerializerSettings
                         {
-                            ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+                            ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                            PreserveReferencesHandling = PreserveReferencesHandling.Objects,
                         };
                         ChangeLog changeLog = new ChangeLog
                         {
                             User = user,
                             ChangeTime = DateTime.Now,
-                            ChangeType = "Edit",
-                            ModelName = "Kennel",
+                            ChangeType = "Edited kennel",
+                            ModelName = existingKennel.Name,
                             OldValues = JsonConvert.SerializeObject(originalKennelBeforeChanges, settings),
                             NewValues = JsonConvert.SerializeObject(existingKennel, settings)
                         };
                         _context.ChangeLogs.Add(changeLog);
                     }
-                    
                     _context.Update(existingKennel);
                     await _context.SaveChangesAsync();
                 }
@@ -358,44 +369,39 @@ namespace CCP.Controllers
 
         public async Task<IActionResult> GetLogo(string logoName)
         {
-            string bucketName = "ccpgroupbucket";
-            var accessKey = _configuration["AwsAccessKey"];
-            var secretKey = _configuration["AwsSecretKey"];
-
-            using var client = new AmazonS3Client(accessKey, secretKey, RegionEndpoint.EUNorth1);
-            // Specify the bucket name and object key (file path)
-            string objectKey = logoName;
-
-            // Create a request to get the object (image)
-            var request = new GetObjectRequest
+            if (string.IsNullOrEmpty(logoName))
             {
-                BucketName = bucketName,
-                Key = objectKey
-            };
-
-            // Get the object (image)
-            GetObjectResponse response = await client.GetObjectAsync(request);
-            byte[] imageBytes;
-            var contentType = string.Empty;
-            if (Path.GetExtension(objectKey) == ".jpg" || Path.GetExtension(objectKey) == ".jpeg")
-            {
-                contentType = "image/jpeg";
-            }
-            else if (Path.GetExtension(objectKey) == ".png")
-            {
-                contentType = "image/png";
+                return NotFound();
             }
 
-            // Read the image data from the response
-            using (System.IO.Stream responseStream = response.ResponseStream)
+            // Combine the uploads folder path with the image file name.
+            var uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "uploads");
+            var imagePath = Path.Combine(uploadsFolder, logoName);
+
+            // Check if the file exists.
+            if (!System.IO.File.Exists(imagePath))
             {
-                using (var memoryStream = new MemoryStream())
-                {
-                    await responseStream.CopyToAsync(memoryStream);
-                    imageBytes = memoryStream.ToArray();
-                }
+                return NotFound();
             }
-            return File(imageBytes, contentType);
+
+            var contentType = "image/jpeg"; 
+            switch (Path.GetExtension(imagePath).ToLower())
+            {
+                case ".jpg":
+                case ".jpeg":
+                    contentType = "image/jpeg";
+                    break;
+                case ".png":
+                    contentType = "image/png";
+                    break;
+                case ".gif":
+                    contentType = "image/gif";
+                    break;
+            }
+
+            // Return the file.
+            var fileBytes = System.IO.File.ReadAllBytes(imagePath);
+            return File(fileBytes, contentType, logoName);
         }
     }
 }

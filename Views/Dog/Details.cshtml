@@ -89,8 +89,16 @@
             @Html.DisplayFor(model => model.Kennel.UserId)
         </dd>
     </dl>
+    <div class="row">
+        @foreach (var image in Model.Dog.Images)
+        {
+            <div class="card" style="width: 18rem;">
+                <img src="@Url.Action("GetImages", "Dog", new { imageName = image.Name })" alt="Dogs images" class="card-img-top">
+            </div>
+        }
+    </div>
 </div>
-<div>
+<div class="mt-3">
     <a asp-action="Edit" asp-route-id="@Model.Dog?.ID">Edit</a> |
     <a asp-action="Index">Back to List</a>
 </div>

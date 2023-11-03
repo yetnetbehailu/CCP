@@ -8,16 +8,23 @@ using Microsoft.EntityFrameworkCore;
 using CCP.Data;
 using CCP.Models.DogModels;
 using CCP.ViewModels;
+using Amazon.S3.Transfer;
+using Amazon.S3;
+using CCP.Models;
+using Amazon;
+using Amazon.S3.Model;
 
 namespace CCP.Controllers
 {
     public class DogController : Controller
     {
         private readonly CCPContext _context;
+        private readonly IConfiguration _configuration;
 
-        public DogController(CCPContext context)
+        public DogController(CCPContext context, IConfiguration configuration)
         {
             _context = context;
+            _configuration = configuration;
         }
 
         // GET: Dog
@@ -51,6 +58,7 @@ namespace CCP.Controllers
                 .Include(d => d.Breeder).ThenInclude(u => u.Breeder)
                 .Include(d => d.Kennel).ThenInclude(u => u.Kennel)
                 .Include(d => d.Owner)
+                .Include(d => d.Images)
                 .FirstOrDefaultAsync(m => m.ID == id);
             if (dog == null)
             {
@@ -63,6 +71,42 @@ namespace CCP.Controllers
                 Kennel = _context.Kennel.FirstOrDefault(k => k.UserId == dog.KennelID)
             };
             return View(model);
+        }
+
+        public async Task<IActionResult> GetImages(string imageName)
+        {
+            string bucketName = "ccpgroupbucket";
+            var accessKey = _configuration["AwsAccessKey"];
+            var secretKey = _configuration["AwsSecretKey"];
+            using var client = new AmazonS3Client(accessKey, secretKey, RegionEndpoint.EUNorth1);
+            string objectKey = imageName;
+            var request = new GetObjectRequest
+            {
+                BucketName = bucketName,
+                Key = objectKey,
+            };
+            // Get the object (image)
+            GetObjectResponse response = await client.GetObjectAsync(request);
+            byte[] imageBytes;
+            var contentType = string.Empty;
+            if (Path.GetExtension(objectKey) == ".jpg" || Path.GetExtension(objectKey) == ".jpeg")
+            {
+                contentType = "image/jpeg";
+            }
+            else if (Path.GetExtension(objectKey) == ".png")
+            {
+                contentType = "image/png";
+            }
+            // You can now read the image data from the response
+            using (System.IO.Stream responseStream = response.ResponseStream)
+            {
+                using (var memoryStream = new MemoryStream())
+                {
+                    await responseStream.CopyToAsync(memoryStream);
+                    imageBytes = memoryStream.ToArray();
+                }
+            }
+            return File(imageBytes, contentType);
         }
 
         // GET: Dog/Create
@@ -87,11 +131,38 @@ namespace CCP.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ID,RegName,RegNo,PetName,DOB,YearOfDeath,Coat,Gender,Color,Height,Weight,OwnerID,BreederID,KennelID")] Dog dog)
+        public async Task<IActionResult> Create(DogImagesVM vm)
         {
             // dog.OwnerID = "user2";
             // dog.BreederID = "user2";
-            _context.Dog.Add(dog);
+            Dog newDog = vm.Dog;
+            if(vm.Images.Count > 0)
+            {
+                List<ImagesMetaData> images = new List<ImagesMetaData>();
+
+                string bucketName = "ccpgroupbucket";
+                var accessKey = _configuration["AwsAccessKey"];
+                var secretKey = _configuration["AwsSecretKey"];
+                using (var client = new AmazonS3Client(accessKey, secretKey, RegionEndpoint.EUNorth1))
+                {
+                    foreach (var image in vm.Images)
+                    {
+                        var imageName = Guid.NewGuid().ToString() + Path.GetExtension(image.FileName);
+                        var fileTransferUtility = new TransferUtility(client);
+
+                        using (var stream = image.OpenReadStream())
+                        {
+                            await fileTransferUtility.UploadAsync(stream, bucketName, imageName);
+                        }
+                        ImagesMetaData imagesMetaData = new ImagesMetaData { Name = imageName, ImagePath = $"https://{bucketName}.s3.amazonaws.com/{imageName}", UploadDate = DateTime.Now, Dog = newDog };
+                        images.Add(imagesMetaData);
+                    }
+                    
+                }
+                newDog.Images = images;
+            }
+            
+            _context.Dog.Add(newDog);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
@@ -117,9 +188,7 @@ namespace CCP.Controllers
             return View(dog);
         }
 
-        // POST: Dog/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("ID,RegName,RegNo,PetName,DOB,YearOfDeath,Coat,Gender,Color,Height,Weight,OwnerID,BreederID,KennelID")] Dog dog)
@@ -146,6 +215,7 @@ namespace CCP.Controllers
                 .Include(d => d.Breeder)
                 .Include(d => d.Kennel)
                 .Include(d => d.Owner)
+                .Include(d => d.Images)
                 .FirstOrDefaultAsync(m => m.ID == id);
             if (dog == null)
             {
@@ -169,9 +239,30 @@ namespace CCP.Controllers
             {
                 return Problem("Entity set 'CCPContext.Dog'  is null.");
             }
-            var dog = await _context.Dog.FindAsync(id);
+            var dog = await _context.Dog
+                .Include(d => d.Images)
+                .FirstOrDefaultAsync(d => d.ID == id);
             if (dog != null)
             {
+                if (dog.Images.Count > 0)
+                {
+                    string bucketName = "ccpgroupbucket";
+                    var accessKey = _configuration["AwsAccessKey"];
+                    var secretKey = _configuration["AwsSecretKey"];
+
+                    using var client = new AmazonS3Client(accessKey, secretKey, RegionEndpoint.EUNorth1);
+                    foreach (var image in dog.Images)
+                    {
+                        string objectKey = image.Name;
+                        var request = new DeleteObjectRequest
+                        {
+                            BucketName = bucketName,
+                            Key = objectKey
+                        };
+                        await client.DeleteObjectAsync(request);
+                        _context.ImagesMetaData.Remove(image);
+                    }
+                }
                 _context.Dog.Remove(dog);
             }
             

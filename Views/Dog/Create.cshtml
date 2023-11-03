@@ -1,4 +1,4 @@
-﻿@model CCP.Models.DogModels.Dog
+﻿@model CCP.ViewModels.DogImagesVM
 
 @{
     ViewData["Title"] = "Create";
@@ -10,69 +10,74 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Create">
+        <form asp-action="Create" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="RegName" class="control-label"></label>
-                <input asp-for="RegName" class="form-control" />
-                <span asp-validation-for="RegName" class="text-danger"></span>
+                <label asp-for="Dog.RegName" class="control-label"></label>
+                <input asp-for="Dog.RegName" class="form-control" />
+                <span asp-validation-for="Dog.RegName" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="RegNo" class="control-label"></label>
-                <input asp-for="RegNo" class="form-control" />
-                <span asp-validation-for="RegNo" class="text-danger"></span>
+                <label asp-for="Dog.RegNo" class="control-label"></label>
+                <input asp-for="Dog.RegNo" class="form-control" />
+                <span asp-validation-for="Dog.RegNo" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="PetName" class="control-label"></label>
-                <input asp-for="PetName" class="form-control" />
-                <span asp-validation-for="PetName" class="text-danger"></span>
+                <label asp-for="Dog.PetName" class="control-label"></label>
+                <input asp-for="Dog.PetName" class="form-control" />
+                <span asp-validation-for="Dog.PetName" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="DOB" class="control-label"></label>
-                <input asp-for="DOB" class="form-control" />
-                <span asp-validation-for="DOB" class="text-danger"></span>
+                <label asp-for="Dog.DOB" class="control-label"></label>
+                <input asp-for="Dog.DOB" class="form-control" />
+                <span asp-validation-for="Dog.DOB" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="YearOfDeath" class="control-label"></label>
-                <input asp-for="YearOfDeath" class="form-control" />
-                <span asp-validation-for="YearOfDeath" class="text-danger"></span>
+                <label asp-for="Dog.YearOfDeath" class="control-label"></label>
+                <input asp-for="Dog.YearOfDeath" class="form-control" />
+                <span asp-validation-for="Dog.YearOfDeath" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Coat" class="control-label"></label>
-                <input asp-for="Coat" class="form-control" />
-                <span asp-validation-for="Coat" class="text-danger"></span>
+                <label asp-for="Dog.Coat" class="control-label"></label>
+                <input asp-for="Dog.Coat" class="form-control" />
+                <span asp-validation-for="Dog.Coat" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Gender" class="control-label"></label>
-                <input asp-for="Gender" class="form-control" />
-                <span asp-validation-for="Gender" class="text-danger"></span>
+                <label asp-for="Dog.Gender" class="control-label"></label>
+                <input asp-for="Dog.Gender" class="form-control" />
+                <span asp-validation-for="Dog.Gender" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Color" class="control-label"></label>
-                <input asp-for="Color" class="form-control" />
-                <span asp-validation-for="Color" class="text-danger"></span>
+                <label asp-for="Dog.Color" class="control-label"></label>
+                <input asp-for="Dog.Color" class="form-control" />
+                <span asp-validation-for="Dog.Color" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Height" class="control-label"></label>
-                <input asp-for="Height" class="form-control" />
-                <span asp-validation-for="Height" class="text-danger"></span>
+                <label asp-for="Dog.Height" class="control-label"></label>
+                <input asp-for="Dog.Height" class="form-control" />
+                <span asp-validation-for="Dog.Height" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Weight" class="control-label"></label>
-                <input asp-for="Weight" class="form-control" />
-                <span asp-validation-for="Weight" class="text-danger"></span>
+                <label asp-for="Dog.Weight" class="control-label"></label>
+                <input asp-for="Dog.Weight" class="form-control" />
+                <span asp-validation-for="Dog.Weight" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="OwnerID" class="control-label"></label>
-                <input asp-for="OwnerID" value="@ViewBag.OwnerID.Id" class="form-control" />
+                <label asp-for="Dog.OwnerID" class="control-label"></label>
+                <input asp-for="Dog.OwnerID" value="@ViewBag.OwnerID.Id" class="form-control" />
             </div>
             <div class="form-group">
-                <label asp-for="BreederID" class="control-label"></label>
-                <select asp-for="BreederID" class="form-control" asp-items="ViewBag.BreederID"></select>
+                <label asp-for="Dog.BreederID" class="control-label"></label>
+                <select asp-for="Dog.BreederID" class="form-control" asp-items="ViewBag.BreederID"></select>
             </div>
             <div class="form-group">
-                <label asp-for="KennelID" class="control-label"></label>
-                <select asp-for="KennelID" class="form-control" asp-items="ViewBag.KennelID"></select>
+                <label asp-for="Dog.KennelID" class="control-label"></label>
+                <select asp-for="Dog.KennelID" class="form-control" asp-items="ViewBag.KennelID"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="Images" class="control-label">Images</label>
+                <input asp-for="Images" type="file" class="form-control" accept=".jpg, .jpeg, .png" multiple/>
+                <span asp-validation-for="Images" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
