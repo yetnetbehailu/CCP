@@ -3,11 +3,16 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using CCP.Data;
 using CCP.Models.BreederModels;
+
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using Newtonsoft.Json;
 using CCP.Models;
 using CCP.Areas.Identity.Data;
+
+
+using CCP.ViewModels;
+
 
 namespace CCP.Controllers
 {
@@ -195,6 +200,24 @@ namespace CCP.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var breeder = await _context.Breeder.FindAsync(id);
+            if (breeder == null)
+            {
+                return NotFound();
+            }
+
+            _context.Breeder.Remove(breeder);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
+        }
+
         // GET: Breeder/Details/id
         public async Task<IActionResult> Details(int? id)
         {
@@ -211,8 +234,17 @@ namespace CCP.Controllers
                 return NotFound();
             }
 
-            return View(breeder);
+            var dogs = await _context.Dog.Where(d => d.BreederID == breeder.UserID).ToListAsync();
+
+            var viewModel = new BreederDetailsViewModel
+            {
+                Breeder = breeder,
+                Dogs = dogs
+            };
+
+            return View(viewModel);
         }
+
 
     }
 }
