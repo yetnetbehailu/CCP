@@ -1,4 +1,6 @@
-﻿@page "/Account/Register"
+
+@page "{handler?}"
+>>>>>>> 623020bda4200da72ec43e6e429c10590c870160
 @model RegisterModel
 @{
     ViewData["Title"] = "Register";
@@ -13,12 +15,13 @@
             <hr />
             <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
             <div class="form-floating mb-3">
-                <input asp-for="Input.UserName" id="UserName" class="form-control" autocomplete="username" aria-required="true" placeholder="Username" />
-                <label asp-for="Input.UserName">Username</label>
+                <input asp-for="Input.UserName" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
+                <label asp-for="Input.UserName">UserName</label>
                 <span asp-validation-for="Input.UserName" class="text-danger"></span>
             </div>
             <div class="form-floating mb-3">
-                <input asp-for="Input.Email" class="form-control"  aria-required="true" placeholder="name@example.com" />
+                <input asp-for="Input.Email" class="form-control" autocomplete="email" aria-required="true" placeholder="name@example.com" />
+>>>>>>> 623020bda4200da72ec43e6e429c10590c870160
                 <label asp-for="Input.Email">Email</label>
                 <span asp-validation-for="Input.Email" class="text-danger"></span>
             </div>
@@ -35,67 +38,61 @@
             <button id="registerSubmit" type="submit" class="w-100 btn btn-lg btn-primary">Register</button>
         </form>
     </div>
-    <div class="col-md-6 col-md-offset-2">
-        <section>
-            <h3>Use another service to register.</h3>
-            <hr />
-            @{
-                if ((Model.ExternalLogins?.Count ?? 0) == 0)
-                {
-                    <div>
-                        <p>
-                            There are no external authentication services configured. See this <a href="https://go.microsoft.com/fwlink/?LinkID=532715">
-                                article
-                                about setting up this ASP.NET application to support logging in via external services
-                            </a>.
-                        </p>
-                    </div>
-                }
-                else
-                {
-                    <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="form-horizontal">
-                        <div>
-                            <p>
-                                @foreach (var provider in Model.ExternalLogins!)
-                                {
-                                    <button type="submit" class="btn btn-primary" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">@provider.DisplayName</button>
-                                }
-                            </p>
-                        </div>
-                    </form>
-                }
-            }
-        </section>
-    </div>
+>>>>>>> 623020bda4200da72ec43e6e429c10590c870160
 </div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
-    <script>// Attach an event listener to the "Input.UserName" input field
-        $("#UserName").on("input", function () {
-            var username = $(this).val();
-            console.log('Generated URL: ' + '@Url.Page("/Account/Register", "IsUsernameInUse")');
-            
-            // Make an AJAX request to check username availability
-            $.ajax({
-                type: "GET", // Use the HTTP GET method
-                url: "/Account/Register/IsUsernameInUse",// The URL for the IsUsernameInUse action
-                data: { UserName: username }, // Send the username as a parameter
-                success: function (result) {
-                    if (result) {
-                        console.log(username);
-                        console.log(result);
-                        // Add is-invalid class to indicate an error
-                        $("#UserName").addClass("is-invalid");
+    <script>
+        jQuery.noConflict();
+        (function ($) {
+            $(document).ready(function ($) {
+                function timerWaiter(func, wait) {
+                    var timeout;
+                    return function executedFunction() {
+                        var context = this;
+                        var args = arguments;
+                        var later = function () {
+                            timeout = null;
+                            func.apply(context, args);
+                        };
 
-                        // Set aria-invalid to true
-                        $("#UserName").attr("aria-invalid", "true");
-                    } else {
-                        $("#UserName").removeClass("is-invalid");
-
-                        $("#UserName").attr("aria-invalid", "false");
-                    }
-                }
+                        clearTimeout(timeout);
+                        timeout = setTimeout(later, wait);
+                    };
+                };
+                var checkUsername = timerWaiter(function () {
+                    var inputText = $('#Input_UserName').val();
+                    console.log('Generated URL: ' + '@Url.Page("/Account/Register", "IsUsernameInUse")');
+                    $.ajax({
+                        url: '@Url.Page("/Account/Register", "IsUsernameInUse", new { area = "Identity" })',
+                        data: { username: inputText },
+                        type: 'GET',
+                        success: function (response) {
+                            var validationMessageSpan = $('#Input_UserName').siblings('.text-danger');
+                            if (!response.isAvailable) {
+                                // Username is in use
+                                $('#Input_UserName').addClass('is-invalid');
+                                validationMessageSpan.text('Username is already taken.');
+                                console.log("in use" + response.isAvailable);
+                            } else {
+                                // Username is unique
+                                $('#Input_UserName').removeClass('is-invalid');
+                                validationMessageSpan.text('Username is ok');
+                                console.log(response.isAvailable);
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            console.error("Error: " + error);
+                            var validationMessageSpan = $('#Input_UserName').next('.text-danger');
+                            validationMessageSpan.text('Error checking username. Please try again.');
+                           
+                        }
+                    });
+                },250); 
+                $('#Input_UserName').on('input', checkUsername);
             });
-        });</script>
+        })(jQuery);
+    </script>
+>>>>>>> 623020bda4200da72ec43e6e429c10590c870160
 }

@@ -41,8 +41,14 @@
         <dd>
             <ul>
                 @foreach (string change in changes)
-                {
-                    <li>@change</li>
+                { 
+                    if (change.Contains("Logo"))
+                    {
+                        <li>Logo changed</li>
+                    }else if (!change.Contains("User"))
+                    {
+                        <li>@change</li>
+                    }
                 }
             </ul>
             
