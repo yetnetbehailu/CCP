@@ -55,7 +55,6 @@ namespace CCP.Areas.Identity.Pages.Account
         {
             
             public InputModel() { }
->>>>>>> 623020bda4200da72ec43e6e429c10590c870160
             [Required]
             [EmailAddress]
             [Display(Name = "Email")]
