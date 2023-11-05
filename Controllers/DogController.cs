@@ -13,6 +13,8 @@ using Amazon.S3;
 using CCP.Models;
 using Amazon;
 using Amazon.S3.Model;
+using Microsoft.AspNetCore.Hosting;
+using CCP.Helpers;
 
 namespace CCP.Controllers
 {
@@ -20,11 +22,15 @@ namespace CCP.Controllers
     {
         private readonly CCPContext _context;
         private readonly IConfiguration _configuration;
+        private readonly IWebHostEnvironment _webHostEnvironment;
+        private EnumHelper enumHelper;
 
-        public DogController(CCPContext context, IConfiguration configuration)
+        public DogController(CCPContext context, IConfiguration configuration, IWebHostEnvironment webHostEnvironment)
         {
             _context = context;
             _configuration = configuration;
+            _webHostEnvironment = webHostEnvironment;
+            enumHelper = new EnumHelper();
         }
 
         // GET: Dog
@@ -75,40 +81,40 @@ namespace CCP.Controllers
 
         public async Task<IActionResult> GetImages(string imageName)
         {
-            string bucketName = "ccpgroupbucket";
-            var accessKey = _configuration["AwsAccessKey"];
-            var secretKey = _configuration["AwsSecretKey"];
-            using var client = new AmazonS3Client(accessKey, secretKey, RegionEndpoint.EUNorth1);
-            string objectKey = imageName;
-            var request = new GetObjectRequest
+            if (string.IsNullOrEmpty(imageName))
             {
-                BucketName = bucketName,
-                Key = objectKey,
-            };
-            // Get the object (image)
-            GetObjectResponse response = await client.GetObjectAsync(request);
-            byte[] imageBytes;
-            var contentType = string.Empty;
-            if (Path.GetExtension(objectKey) == ".jpg" || Path.GetExtension(objectKey) == ".jpeg")
-            {
-                contentType = "image/jpeg";
+                return NotFound();
             }
-            else if (Path.GetExtension(objectKey) == ".png")
-            {
-                contentType = "image/png";
-            }
-            // You can now read the image data from the response
-            using (System.IO.Stream responseStream = response.ResponseStream)
-            {
-                using (var memoryStream = new MemoryStream())
-                {
-                    await responseStream.CopyToAsync(memoryStream);
-                    imageBytes = memoryStream.ToArray();
-                }
-            }
-            return File(imageBytes, contentType);
-        }
 
+            // Combine the uploads folder path with the image file name.
+            var uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "uploads");
+            var imagePath = Path.Combine(uploadsFolder, imageName);
+
+            // Check if the file exists.
+            if (!System.IO.File.Exists(imagePath))
+            {
+                return NotFound();
+            }
+
+            var contentType = "image/jpeg";
+            switch (Path.GetExtension(imagePath).ToLower())
+            {
+                case ".jpg":
+                case ".jpeg":
+                    contentType = "image/jpeg";
+                    break;
+                case ".png":
+                    contentType = "image/png";
+                    break;
+                case ".gif":
+                    contentType = "image/gif";
+                    break;
+            }
+
+            // Return the file.
+            var fileBytes = System.IO.File.ReadAllBytes(imagePath);
+            return File(fileBytes, contentType, imageName);
+        }
         // GET: Dog/Create
         public IActionResult Create()
         {
@@ -123,6 +129,9 @@ namespace CCP.Controllers
             ViewData["BreederID"] = new SelectList(breeder, "UserID", "UserID");
             ViewData["KennelID"] = new SelectList(kennel, "UserId", "UserId");
             ViewData["OwnerID"] = loggedUser;
+            ViewData["Gender"] = enumHelper.ConvertEnumToRadioList<Genders>();
+            ViewData["Coat"] = enumHelper.ConvertEnumToRadioList<Coats>();
+
             return View();
         }
 
@@ -140,25 +149,24 @@ namespace CCP.Controllers
             {
                 List<ImagesMetaData> images = new List<ImagesMetaData>();
 
-                string bucketName = "ccpgroupbucket";
-                var accessKey = _configuration["AwsAccessKey"];
-                var secretKey = _configuration["AwsSecretKey"];
-                using (var client = new AmazonS3Client(accessKey, secretKey, RegionEndpoint.EUNorth1))
-                {
-                    foreach (var image in vm.Images)
-                    {
-                        var imageName = Guid.NewGuid().ToString() + Path.GetExtension(image.FileName);
-                        var fileTransferUtility = new TransferUtility(client);
+                
+               foreach (var image in vm.Images)
+               {
+                    var imageName = Guid.NewGuid().ToString() + Path.GetExtension(image.FileName);
 
-                        using (var stream = image.OpenReadStream())
-                        {
-                            await fileTransferUtility.UploadAsync(stream, bucketName, imageName);
-                        }
-                        ImagesMetaData imagesMetaData = new ImagesMetaData { Name = imageName, ImagePath = $"https://{bucketName}.s3.amazonaws.com/{imageName}", UploadDate = DateTime.Now, Dog = newDog };
-                        images.Add(imagesMetaData);
+                    var uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "uploads");
+                    Directory.CreateDirectory(uploadsFolder); // Create the directory if it doesn't exist
+                    var imagePath = Path.Combine(uploadsFolder, imageName);
+                    using (var stream = new FileStream(imagePath, FileMode.Create))
+                    {
+                        await image.CopyToAsync(stream);
                     }
+
+                    ImagesMetaData imagesMetaData = new ImagesMetaData { Name = imageName, ImagePath = imagePath, UploadDate = DateTime.Now, Dog = newDog };
+                    images.Add(imagesMetaData);
+               }
                     
-                }
+                
                 newDog.Images = images;
             }
             
