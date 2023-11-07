@@ -26,6 +26,19 @@ namespace CCP.Services
 
             await _sendGridClient.SendEmailAsync(msg);
         }
+
+        public async Task SendResetConfirmationEmail(string toEmail, string confirmationLink)
+        {
+            var from = new EmailAddress("YETNAYET.BEHAILU.BEKELE.WEBD22JON@EDU.TUCSWEDEN.SE", "CCP");
+            var to = new EmailAddress(toEmail);
+            var subject = "Reset Your Password";
+            var plainTextContent = "Please click the following link to reset your password: " + confirmationLink;
+            var htmlContent = "<p>Please click the following link to reset your password:</p><p><a href='" + confirmationLink + "'>Reset Password</a></p>";
+
+            var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
+
+            await _sendGridClient.SendEmailAsync(msg);
+        }
     }
 }
 

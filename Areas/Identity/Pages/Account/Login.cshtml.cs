@@ -117,7 +117,7 @@ namespace CCP.Areas.Identity.Pages.Account
                 // This doesn't count login failures towards account lockout
                 // To enable password failures to trigger account lockout, set lockoutOnFailure: true
                 var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == Input.EmailUsername);
-                if(user == null)
+                if (user == null)
                 {
                     user = await _context.Users.FirstOrDefaultAsync(u => u.Email == Input.EmailUsername);
                 }
@@ -129,7 +129,7 @@ namespace CCP.Areas.Identity.Pages.Account
                 }
                 if (result.RequiresTwoFactor)
                 {
-                    return RedirectToPage("./LoginWith2fa", new { ReturnUrl = returnUrl, RememberMe = Input.RememberMe });
+                    return RedirectToPage("./LoginWith2fa", new { ReturnUrl = returnUrl, Input.RememberMe });
                 }
                 if (result.IsLockedOut)
                 {
