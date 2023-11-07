@@ -64,13 +64,6 @@ namespace CCP.Areas.Identity.Pages.Account
                 StatusMessage = "Error confirming your email.";
             }
 
-            // Generate the confirmation link
-            string confirmationLink = Url.Page("/Account/ConfirmEmail",pageHandler: null,
-                values: new { userId = user.Id, code }, protocol: Request.Scheme);
-
-
-            // Send the confirmation email
-            await _emailService.SendConfirmationEmail(user.Email, confirmationLink);
             return Page();
         }
     }
