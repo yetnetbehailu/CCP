@@ -12,16 +12,21 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
+using CCP.Services;
 
 namespace CCP.Areas.Identity.Pages.Account
 {
     public class ConfirmEmailModel : PageModel
     {
         private readonly UserManager<CCPUser> _userManager;
+        private readonly EmailService _emailService;
+        private readonly ILogger<ConfirmEmailModel> _logger;
 
-        public ConfirmEmailModel(UserManager<CCPUser> userManager)
+        public ConfirmEmailModel(UserManager<CCPUser> userManager, EmailService emailService, ILogger<ConfirmEmailModel> logger)
         {
             _userManager = userManager;
+            _emailService = emailService;
+            _logger = logger;
         }
 
         /// <summary>
@@ -32,6 +37,7 @@ namespace CCP.Areas.Identity.Pages.Account
         public string StatusMessage { get; set; }
         public async Task<IActionResult> OnGetAsync(string userId, string code)
         {
+            _logger.LogInformation("User ID: {UserId}, Confirmation Code: {Code}", userId, code);
             if (userId == null || code == null)
             {
                 return RedirectToPage("/Index");
@@ -44,8 +50,20 @@ namespace CCP.Areas.Identity.Pages.Account
             }
 
             code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));
+
+            // Confirm the email using Identity
             var result = await _userManager.ConfirmEmailAsync(user, code);
-            StatusMessage = result.Succeeded ? "Thank you for confirming your email." : "Error confirming your email.";
+            if (result.Succeeded)
+            {
+                // Email confirmation was successful
+                StatusMessage = "Thank you for confirming your email.";
+            }
+            else
+            {
+                // Email confirmation failed
+                StatusMessage = "Error confirming your email.";
+            }
+
             return Page();
         }
     }

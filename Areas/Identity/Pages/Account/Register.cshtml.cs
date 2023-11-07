@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.WebUtilities;
 using CCP.Data;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
+using CCP.Services;
 
 namespace CCP.Areas.Identity.Pages.Account
 {
@@ -26,23 +27,23 @@ namespace CCP.Areas.Identity.Pages.Account
         private readonly IUserStore<CCPUser> _userStore;
         private readonly IUserEmailStore<CCPUser> _emailStore;
         private readonly ILogger<RegisterModel> _logger;
-        private readonly IEmailSender _emailSender;
+        private readonly EmailService _emailService;
 
         public RegisterModel(
             UserManager<CCPUser> userManager,
             IUserStore<CCPUser> userStore,
             SignInManager<CCPUser> signInManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender,
-            CCPContext context)
+            CCPContext context,
+            EmailService emailService)
         {
             _userManager = userManager;
             _userStore = userStore;
             _emailStore = GetEmailStore();
             _signInManager = signInManager;
             _logger = logger;
-            _emailSender = emailSender;
             _context = context;
+            _emailService = emailService;
         }
 
         
@@ -61,8 +62,8 @@ namespace CCP.Areas.Identity.Pages.Account
             public string Email { get; set; }
 
             [Required]
-            [Display(Name = "User name")]
-            [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
+            [Display(Name = "Username")]
+            [StringLength(20, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 2)]
             public string UserName { get; set; }
             
             [Required]
@@ -105,21 +106,19 @@ namespace CCP.Areas.Identity.Pages.Account
                 {
                     _logger.LogInformation("User created a new account with password.");
 
-                    var userId = await _userManager.GetUserIdAsync(user);
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-                    var callbackUrl = Url.Page(
-                        "/Account/ConfirmEmail",
-                        pageHandler: null,
-                        values: new { area = "Identity", userId = userId, code = code, returnUrl = returnUrl },
-                        protocol: Request.Scheme);
 
-                    await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
-                        $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                    // Generate the confirmation link
+                    string confirmationLink = Url.Page("/Account/ConfirmEmail", pageHandler: null,
+                        values: new { userId = user.Id, code }, protocol: Request.Scheme);
+
+                    // Send the confirmation email
+                    await _emailService.SendConfirmationEmail(user.Email, confirmationLink);
 
                     if (_userManager.Options.SignIn.RequireConfirmedAccount)
                     {
-                        return RedirectToPage("RegisterConfirmation", new { email = Input.Email, returnUrl = returnUrl });
+                        return RedirectToPage("RegisterConfirmation", new { email = Input.Email, returnUrl });
                     }
                     else
                     {
