@@ -11,6 +11,22 @@
 
 <h1>Kennel Registry</h1>
 
+<div class="row text-end">
+    @using (Html.BeginForm("Index", "Kennels", FormMethod.Get))
+    {
+        <p>
+            Search: @Html.TextBox("search")
+            <input type="submit" value="Filter" />
+        </p>
+        <p>
+            Country: @Html.DropDownList("country", new SelectList(ViewBag.Countries, "Value", "Text"), "All Countries")
+            <input type="submit" value="Filter by Country" />
+        </p>
+    }
+</div>
+
+
+
 <p>
     @if (SignInManager.IsSignedIn(User))
     {
@@ -37,23 +53,15 @@
                 @Html.DisplayNameFor(model => model.Name)
             </th>
             <th>
+
+            </th>
+            <th>
                 @Html.DisplayNameFor(model => model.OwnerName)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.WebsiteURL)
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Address)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Phone)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Mobile)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.About)
-            </th>
+            
             <th>
                 @Html.DisplayNameFor(model => model.Country)
             </th>
@@ -67,22 +75,16 @@
                 @Html.DisplayFor(modelItem => item.Name)
             </td>
             <td>
+                    @if(item.Logo != null)
+                    {
+                        <img src="@Url.Action("GetLogo", "Kennels", new{logoName = item.Logo.Name})" alt="Kennel Logo" width="60px" height="60px" />
+                    }
+            </td>
+            <td>
                 @Html.DisplayFor(modelItem => item.OwnerName)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.WebsiteURL)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Address)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Phone)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Mobile)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.About)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Country.Name)

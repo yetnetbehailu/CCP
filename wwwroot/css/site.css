@@ -18,5 +18,53 @@ html {
 }
 
 body {
-  margin-bottom: 60px;
+    margin-bottom: 60px;
+    background-color: #F1f1f1;
+}
+a{
+    color: darkgoldenrod;
+    text-decoration: none;
+}
+/* Custom Styles for Navbar */
+.navbar-custom {
+    background-color: #333; /* Dark background */
+    border-bottom: 2px solid #666; /* Darker border for a slight 3D effect */
+}
+
+    .navbar-custom .navbar-brand,
+    .navbar-custom .nav-link {
+        color: #fff; /* Light text color for contrast */
+    }
+
+        .navbar-custom .nav-link:hover,
+        .navbar-custom .nav-link:focus {
+            color: #f8f9fa; /* Slightly lighter color on hover/focus */
+            background-color: transparent; /* Clear any background */
+        }
+
+    .navbar-custom .navbar-toggler {
+        border-color: #fff; /* Light border for the toggler */
+    }
+
+    .navbar-custom .navbar-toggler-icon {
+        background-image: url("data:image/svg+xml, /* SVG of the toggler icon with a light color */");
+    }
+
+/* Adjusting padding for navbar items for better spacing */
+.navbar-nav .nav-item {
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+/* Active link styling */
+.navbar-custom .nav-pills .nav-item .nav-link.active {
+    background-color: #555; /* Darker background for the active link */
+    color: #fff;
+}
+
+/* Responsive behavior */
+@media (max-width: 576px) {
+    .navbar-nav {
+        margin-top: 10px; /* Add some margin on smaller screens */
+    }
 }

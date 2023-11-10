@@ -79,7 +79,7 @@
                 {
                     @foreach (var dog in kennelDogs)
                     {
-                        <li>@dog.RegName</li>
+                        <li><a asp-action="Details" asp-controller="Dog" asp-route-Id="@dog.ID">@dog.RegName</a></li>
                     }
                 }
                 else

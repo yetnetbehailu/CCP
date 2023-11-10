@@ -34,10 +34,28 @@ namespace CCP.Controllers
         }
 
         // GET: Kennels
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string search = "", string country = "")
         {
-            var cCPContext = _context.Kennel.Include(k => k.Country);
-            return View(await cCPContext.ToListAsync());
+            var query = _context.Kennel
+        .Where(k => k.Name.Contains(search));
+
+            if (!string.IsNullOrWhiteSpace(country) && country != "All Countries")
+            {
+                query = query.Where(k => k.Country.Name == country);
+            }
+
+            query = query.Include(k => k.Logo)
+                         .Include(k => k.Country);
+
+            ViewBag.Countries = _context.Kennel.Select(k => k.Country.Name).Distinct()
+                   .OrderBy(name => name)
+                   .Select(name => new SelectListItem
+                   {
+                       Value = name,
+                       Text = name
+                   }).ToList();
+
+            return View(await query.ToListAsync());
         }
 
         // GET: Kennels/Details/5
