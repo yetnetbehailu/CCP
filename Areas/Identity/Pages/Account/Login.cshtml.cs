@@ -31,7 +31,6 @@ namespace CCP.Areas.Identity.Pages.Account
             _signInManager = signInManager;
             _logger = logger;
             _context = context;
-
         }
 
         /// <summary>
@@ -121,6 +120,7 @@ namespace CCP.Areas.Identity.Pages.Account
                 {
                     user = await _context.Users.FirstOrDefaultAsync(u => u.Email == Input.EmailUsername);
                 }
+
                 var result = await _signInManager.PasswordSignInAsync(user.UserName, Input.Password, Input.RememberMe, lockoutOnFailure: false);
                 if (result.Succeeded)
                 {

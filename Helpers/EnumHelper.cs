@@ -6,7 +6,7 @@ namespace CCP.Helpers
     public class EnumHelper
     {
         // radio list/buttons of enum properties
-        public static List<SelectListItem> ConvertEnumToRadioList<TEnum>() where TEnum : Enum
+        public List<SelectListItem> ConvertEnumToRadioList<TEnum>() where TEnum : Enum
         {
             var enumValues = Enum.GetValues(typeof(TEnum));
             List<SelectListItem> radioList = new List<SelectListItem>();
