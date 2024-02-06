@@ -1,0 +1,46 @@
+﻿
+@page
+@model EmailModel
+@{
+    ViewData["Title"] = "Email";
+    ViewData["ActivePage"] = ManageNavPages.Email;
+}
+
+@{
+    Layout = "~/Areas/Identity/Pages/Shared/_Layout.cshtml";
+}
+
+<h3>@ViewData["Title"]</h3>
+<div class="row">
+    <div class="col-md-6">
+        <!-- Includes the content of _ManageNav.cshtml -->
+        @await Html.PartialAsync("_ManageNav")
+    </div>
+    <div class="col-md-6">
+        <form id="email-form" method="post" novalidate="novalidate">
+            <div class="text-danger validation-summary-valid" role="alert" data-valmsg-summary="true">
+                <ul>
+                    <li style="display:none"></li>
+                </ul>
+            </div>
+            <div class="form-floating mb-3 input-group">
+                <input class="form-control" placeholder="Please enter your email." disabled="" type="text" id="Email" name="Email" value="yetnayet.behailu.bekele.webd22jon@edu.tucsweden.se">
+                <div class="input-group-append">
+                    <span class="h-100 input-group-text text-success font-weight-bold">✓</span>
+                </div>
+                <label class="form-label" for="Email">Email</label>
+            </div>
+            <div class="form-floating mb-3">
+                <input class="form-control" autocomplete="email" aria-required="true" placeholder="Please enter new email." type="email" data-val="true" data-val-email="The New email field is not a valid e-mail address." data-val-required="The New email field is required." id="Input_NewEmail" name="Input.NewEmail" value="yetnayet.behailu.bekele.webd22jon@edu.tucsweden.se">
+                <label class="form-label" for="Input_NewEmail">New email</label>
+                <span class="text-danger field-validation-valid" data-valmsg-for="Input.NewEmail" data-valmsg-replace="true"></span>
+            </div>
+            <button id="change-email-button" type="submit" class="w-100 btn btn-lg btn-primary" formaction="/Identity/Account/Manage/Email?handler=ChangeEmail">Change email</button>
+            <input name="__RequestVerificationToken" type="hidden" value="CfDJ8AHj0xrNF1ZHsvV7hcs89G_koQwQhOr-2Eq9rGI2k2U-UPTO8x8KFAsxDePpLURzvF5d4PIyKOp53YV3U9HI9H_u4TfJIxi0Ne23IBQEC4WYGo4C71sECVLyWEQosnVgndTVclUA3ZtiufvOYg7F4jhZtXYmAf3dwaiuzYN4jWTtWlDPkarZKV-5iOSKmilQhg">
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

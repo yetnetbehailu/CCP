@@ -31,6 +31,7 @@
     <None Remove="Models\KennelModels\" />
     <None Remove="Helpers\" />
     <None Remove="Services\" />
+    <None Remove="Areas\Identity\Pages\Shared\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Models\DogModels\" />
@@ -38,5 +39,6 @@
     <Folder Include="Models\KennelModels\" />
     <Folder Include="Helpers\" />
     <Folder Include="Services\" />
+    <Folder Include="Areas\Identity\Pages\Shared\" />
   </ItemGroup>
 </Project>
