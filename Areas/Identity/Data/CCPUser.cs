@@ -19,5 +19,7 @@ public class CCPUser : IdentityUser
     public ICollection<Dog> DogOwner { get; set; }
     public ICollection<Dog> DogBreeder { get; set; }
     public ICollection<Dog> DogKennel { get; set; }
+
+    public string? ProfileImagePath { get; set; }
 }
 

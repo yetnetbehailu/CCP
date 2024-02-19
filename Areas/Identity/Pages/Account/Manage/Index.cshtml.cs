@@ -7,6 +7,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using CCP.Areas.Identity.Data;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -86,12 +87,33 @@ namespace CCP.Areas.Identity.Pages.Account.Manage
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync()
+        public async Task<IActionResult> OnPostAsync(IFormFile profileImage) // Param represents the uploaded profile image file
         {
-            var user = await _userManager.GetUserAsync(User);
+            var user = await _userManager.GetUserAsync(User); // Retrives currently logged-in user 
             if (user == null)
             {
                 return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+            }
+
+            if (profileImage != null && profileImage.Length > 0) // Checks if image was upload & if size is greater than 0 bytes
+            {
+                var uploadDirectory = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "profile-images"); // Directory where the uploaded profile images will be stored
+                // Create Directory if Not Exists
+                if (!Directory.Exists(uploadDirectory))
+                {
+                    Directory.CreateDirectory(uploadDirectory);
+                }
+
+                var fileName = $"{Guid.NewGuid()}{Path.GetExtension(profileImage.FileName)}"; // Generate unique File Name using Guid with the original file extension
+                var filePath = Path.Combine(uploadDirectory, fileName); // Combine upload directory path with generated file name to create full file path where image will be stored
+
+                using (var stream = new FileStream(filePath, FileMode.Create)) // Save Image to File System
+                {
+                    await profileImage.CopyToAsync(stream); // Copies uploaded image data to file system asynchronously
+                }
+                // Updates ProfileImagePath property of the user with the path to the uploaded image & saves changes to the user using _userManager
+                user.ProfileImagePath = $"/profile-images/{fileName}";
+                await _userManager.UpdateAsync(user);
             }
 
             if (!ModelState.IsValid)
