@@ -5,69 +5,51 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1>Breeders</h1>
 @if (User.Identity.IsAuthenticated)
+{
+    var userIsBreeder = (bool)ViewData["UserIsBreeder"];
+    var userBreederId = ViewData["UserBreederId"] as int?;
+
+    if (userIsBreeder && userBreederId.HasValue)
     {
-        var userIsBreeder = (bool)ViewData["UserIsBreeder"];
-        var userBreederId=ViewData["UserBreederId"] as int?;
-
-        if (userIsBreeder && userBreederId.HasValue)
-        {
-            <p>
-                <a asp-action="Details" asp-route-id="@userBreederId">Your Breeder Information</a>
-            </p>
-        }
-        else
-        {
-            <p>
-                <a asp-action="Create">+New Breeder</a>
-            </p>
-        }
+        <p>
+            <a asp-action="Details" asp-route-id="@userBreederId">Your Breeder Information</a>
+        </p>
     }
+    else
+    {
+        <p>
+            <a asp-action="Create">+New Breeder</a>
+        </p>
+    }
+}
+<div class="card-grid">
+    @foreach (var item in Model)
+    {
+        <div class="card">
+            <div class="card-header">
+                <h3>@Html.DisplayFor(modelItem => item.Name)</h3>
+            </div>
+            <div class="card-body">
+                <div class="breeder-img-container">
+                    <img src="@item.User.ProfileImagePath" alt="Breeder profile image" class="breeder-img">
+                </div>
+                <div class="breeder-details">
+                    <p><strong>Phone:</strong> @Html.DisplayFor(modelItem => item.Phone)</p>
+                    <p><strong>Address:</strong> @Html.DisplayFor(modelItem => item.Address)</p>
+                    <p><strong>Country:</strong> @Html.DisplayFor(modelItem => item.Country.Name)</p>
+                </div>
+            </div>
+            <div class="card-footer">
+                <a asp-action="Details" asp-route-id="@item.ID">Details</a>
+                @if (User.Identity.IsAuthenticated && item.UserID == User.FindFirstValue(ClaimTypes.NameIdentifier))
+                {
+                    <a asp-action="Edit" asp-route-id="@item.ID">Edit</a>
+                    <a asp-action="Delete" asp-route-id="@item.ID">Delete</a>
+                }
+            </div>
+        </div>
+    }
+</div>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Name)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Phone)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Address)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Country)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Name)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Phone)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Address)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Country.Name)
-                </td>
-                <td>
-                    <a asp-action="Details" asp-route-id="@item.ID">Details</a>
-                    @if (User.Identity.IsAuthenticated && item.UserID == User.FindFirstValue(ClaimTypes.NameIdentifier))
-                    {
-                        <a asp-action="Edit" asp-route-id="@item.ID">Edit</a>
-                        <a asp-action="Delete" asp-route-id="@item.ID">Delete</a>
-                    }
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>

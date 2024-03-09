@@ -18,14 +18,19 @@ namespace CCP.Areas.Identity.Pages.Account.Manage
     {
         private readonly UserManager<CCPUser> _userManager;
         private readonly SignInManager<CCPUser> _signInManager;
+        private readonly ILogger<IndexModel> _logger;
 
         public IndexModel(
             UserManager<CCPUser> userManager,
-            SignInManager<CCPUser> signInManager)
+            SignInManager<CCPUser> signInManager,
+            ILogger<IndexModel> logger)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _logger = logger;
         }
+
+        public string ProfileImagePath { get; set; }
 
         /// <summary>
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
@@ -82,6 +87,9 @@ namespace CCP.Areas.Identity.Pages.Account.Manage
             {
                 return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
             }
+
+            // Get the profile image path from the user object
+            ViewData["ProfileImagePath"] = user.ProfileImagePath;
 
             await LoadAsync(user);
             return Page();

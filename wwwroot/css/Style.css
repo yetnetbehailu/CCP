@@ -1,0 +1,89 @@
+﻿/* Profile page(account settings) */
+
+.profile-img-container {
+    text-align: center;
+    margin: 1rem 0;
+}
+.profile-img {
+    width: 200px;
+    height: 200px;
+    object-fit: cover; /* Image covers the entire container */
+    border-radius: 50%;
+}
+
+.profile-user{
+    text-align:center;
+}
+
+#account-settings {
+    text-align:center;
+}
+
+/* Breeders List page*/
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100%, 1fr)); /* Fit the available space*/
+    gap: 30px;
+}
+
+.card-header {
+    background-color: #f0f0f0;
+    padding: 10px;
+    text-align: center;
+}
+
+.card-body {
+    padding: 20px;
+    display: flex;
+    flex-wrap: wrap; /* Allow items to wrap to the next line */
+    justify-content: center;
+}
+
+.breeder-details {
+    margin-top: 15px;
+    flex: 1; /* Take remaining space */
+}
+
+.breeder-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.card-footer {
+    padding: 10px;
+    text-align: right;
+}
+
+
+/* Media Queries */
+
+/*Breeders List page*/
+@media (max-width: 767px) {
+    .breeder-img-container,
+    .breeder-details {
+        flex: 0 0 100%; /* Full width up to 767px */
+    }
+}
+
+@media (min-width: 768px) {
+    .breeder-img-container,
+    .breeder-details {
+        flex: 0 0 45%; /* From 767px screen width 45% rest of it left for spacing margins */
+    }
+
+    .breeder-img-container {
+        margin-right: 3%;
+    }
+
+    .breeder-details {
+        margin-top: 0px;
+        margin-left: 3%;
+    }
+}
+
+@media (min-width: 1024px) {
+    .card-grid {
+        grid-template-columns: repeat(2, 1fr); /* Two columns(cards) on larger screens */
+    }
+}

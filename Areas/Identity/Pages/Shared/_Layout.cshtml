@@ -51,6 +51,12 @@
             <h1 id="account-settings">
                 Account settings
             </h1>
+            <div class="profile-img-container">
+                <img src="@ViewData["ProfileImagePath"]" alt="Profile image" class="profile-img" />
+            </div>
+            <div class="profile-user">
+                <h2 class="username">@User.Identity.Name</h2>
+            </div>
             @RenderBody()
         </main>
     </div>
