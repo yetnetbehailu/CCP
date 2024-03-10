@@ -33,7 +33,14 @@
             </div>
             <div class="card-body">
                 <div class="breeder-img-container">
-                    <img src="@item.User.ProfileImagePath" alt="Breeder profile image" class="breeder-img">
+                    @if (string.IsNullOrEmpty(item.User.ProfileImagePath))
+                    {
+                        <img src="~/profile-images/profile-placeholder.jpeg" alt="Breeder placeholder image" class="breeder-img" />
+                    }
+                    else
+                    {
+                        <img src="@item.User.ProfileImagePath" alt="Breeder profile image" class="breeder-img">
+                    }
                 </div>
                 <div class="breeder-details">
                     <p><strong>Phone:</strong> @Html.DisplayFor(modelItem => item.Phone)</p>

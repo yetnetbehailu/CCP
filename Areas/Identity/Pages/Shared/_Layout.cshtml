@@ -52,7 +52,13 @@
                 Account settings
             </h1>
             <div class="profile-img-container">
-                <img src="@ViewData["ProfileImagePath"]" alt="Profile image" class="profile-img" />
+                @if (ViewData["ProfileImagePath"] == null)
+                {
+                    <img src="~/profile-images/profile-placeholder.jpeg" alt="Profile placeholder image" class="profile-img" />
+                }
+                else {
+                    <img src="@ViewData["ProfileImagePath"]" alt="Profile image" class="profile-img" />
+                }
             </div>
             <div class="profile-user">
                 <h2 class="username">@User.Identity.Name</h2>
