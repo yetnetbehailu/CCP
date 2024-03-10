@@ -103,6 +103,9 @@ namespace CCP.Areas.Identity.Pages.Account.Manage
                 return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
             }
 
+            // Store old profile image path for deletion
+            var oldProfileImagePath = user.ProfileImagePath;
+
             if (profileImage != null && profileImage.Length > 0) // Checks if image was upload & if size is greater than 0 bytes
             {
                 var uploadDirectory = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "profile-images"); // Directory where the uploaded profile images will be stored
@@ -128,6 +131,19 @@ namespace CCP.Areas.Identity.Pages.Account.Manage
             {
                 await LoadAsync(user);
                 return Page();
+            }
+
+            if (!string.IsNullOrEmpty(oldProfileImagePath))
+            {
+                // Get the full file path of the old image file
+                var oldImagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", oldProfileImagePath.TrimStart('/'));
+
+                // Check if the old image file exists
+                if (System.IO.File.Exists(oldImagePath))
+                {
+                    // Delete the old image file
+                    System.IO.File.Delete(oldImagePath);
+                }
             }
 
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
