@@ -18,14 +18,20 @@
                 <span asp-validation-for="Dog.RegName" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Dog.Gender" class="control-label"></label><br />
+                <label asp-for="Dog.Gender" class="control-label"></label> <br />
+                @{
+                    var genderIndex = 0;
+                    var genderLabelIndex = 0;
+                }
                 @foreach (var gender in ViewData["Gender"] as List<SelectListItem>)
                 {
                     <span>
-                        <input type="radio" asp-for="Dog.Gender" value="@gender.Value" />
-                        @gender.Text
+                        <input id="@($"gender_{genderIndex}")" asp-for="Dog.Coat" type="radio" value="@gender.Value" />
+                        <label for="@($"coat_{genderLabelIndex}")">@gender.Text</label>
                     </span>
-                }
+                     genderIndex++; // Increment the index for each iteration
+                     genderLabelIndex++;
+                 }
                 <span asp-validation-for="Dog.Gender" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -44,14 +50,19 @@
                 <span asp-validation-for="Dog.DOB" class="text-danger"></span>
             </div>
             <div class="form-group">
-
                 <label asp-for="Dog.Coat" class="control-label"></label> <br />
+                @{
+                    var coatIndex = 0; // Initialize a variable to keep track of the index
+                    var labelIndex = 0; // Initialize a variable to keep track of the index for label elements
+                }
                 @foreach (var coat in ViewData["Coat"] as List<SelectListItem>)
                 {
                     <span>
-                        <input asp-for="Dog.Coat" type="radio" value="@coat.Value" />
-                        @coat.Text
+                        <input id="@($"coat_{coatIndex}")" asp-for="Dog.Coat" type="radio" value="@coat.Value" />
+                        <label for="@($"coat_{labelIndex}")">@coat.Text</label>
                     </span>
+                    coatIndex++; // Increment the index for each iteration
+                    labelIndex++; // Increment the index for label elements
                 }
                 <span asp-validation-for="Dog.Coat" class="text-danger"></span>
             </div>
